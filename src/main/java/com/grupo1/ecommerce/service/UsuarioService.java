@@ -1,7 +1,6 @@
 package com.grupo1.ecommerce.service;
 
 import java.util.Optional;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +20,9 @@ public class UsuarioService {
         this.tiendaRepository = tiendaRepository;
     }
 
+ 
+    
+
     @Transactional(readOnly = true)
     public Optional<Usuario> login(String correo, String contrasena) {
         return usuarioRepository.findByCorreoAndContrasena(correo, contrasena);
@@ -37,7 +39,8 @@ public class UsuarioService {
         usuario.setNombre(nombre);
         usuario.setCorreo(correo);
         usuario.setContrasena(contrasena);
-        usuario.setRol("ADMIN");
+        usuario.setRol("ADMIN"); // 
+        
         usuario.setActivo(true);
         usuario = usuarioRepository.save(usuario);
 
@@ -49,6 +52,33 @@ public class UsuarioService {
 
         return usuario;
     }
+
+ 
+    @Transactional
+    public Usuario registrarCliente(Usuario usuario) {
+        usuario.setRol("CLIENTE"); 
+        usuario.setActivo(true);
+     
+        return usuarioRepository.save(usuario);
+    }
+
+ 
+  
+    @Transactional
+    public void actualizarPerfil(Usuario usuario) {
+        Usuario existente = usuarioRepository.findById(usuario.getIdUsuario()).orElse(null);
+        if (existente != null) {
+            existente.setNombre(usuario.getNombre());
+            existente.setCorreo(usuario.getCorreo());
+            // Solo actualiza la contraseña si se envía una nueva
+            if (usuario.getContrasena() != null && !usuario.getContrasena().isEmpty()) {
+                existente.setContrasena(usuario.getContrasena());
+            }
+            usuarioRepository.save(existente);
+        }
+    }
+
+ 
 
     @Transactional(readOnly = true)
     public Optional<Usuario> getUsuario(Integer id) {
