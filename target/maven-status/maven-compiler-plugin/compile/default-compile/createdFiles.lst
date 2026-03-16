@@ -19,6 +19,7 @@ com\grupo1\ecommerce\domain\Categoria.class
 com\grupo1\ecommerce\service\UsuarioService.class
 com\grupo1\ecommerce\service\CategoriaService.class
 com\grupo1\ecommerce\repository\ZonaEnvioRepository.class
+com\grupo1\ecommerce\controller\ClienteAuthController.class
 com\grupo1\ecommerce\repository\DetallePedidoRepository.class
 com\grupo1\ecommerce\repository\PedidoRepository.class
 com\grupo1\ecommerce\ProjectConfig.class

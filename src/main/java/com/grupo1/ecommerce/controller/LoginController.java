@@ -40,6 +40,7 @@ public class LoginController {
                                 @RequestParam String contrasena,
                                 HttpSession session,
                                 RedirectAttributes redirectAttributes) {
+        
         if (correo == null || correo.isBlank() || contrasena == null || contrasena.isBlank()) {
             redirectAttributes.addFlashAttribute("error",
                     messageSource.getMessage("auth.campo.obligatorio", null, Locale.getDefault()));
@@ -47,6 +48,7 @@ public class LoginController {
         }
 
         Optional<Usuario> usuarioOpt = usuarioService.login(correo, contrasena);
+        
         if (usuarioOpt.isEmpty()) {
             redirectAttributes.addFlashAttribute("error",
                     messageSource.getMessage("auth.credenciales.invalidas", null, Locale.getDefault()));
@@ -54,20 +56,27 @@ public class LoginController {
         }
 
         Usuario usuario = usuarioOpt.get();
+        
         if (!usuario.isActivo()) {
             redirectAttributes.addFlashAttribute("error",
                     messageSource.getMessage("auth.cuenta.inactiva", null, Locale.getDefault()));
             return "redirect:/auth/login";
         }
 
+        // Guardar usuario en sesión
         session.setAttribute("usuarioLogueado", usuario);
+        session.setAttribute("nombreUsuario", usuario.getNombre());
+        session.setAttribute("rolUsuario", usuario.getRol());
 
-        Optional<Tienda> tiendaOpt = usuarioService.getTiendaPorUsuario(usuario);
-        tiendaOpt.ifPresent(t -> session.setAttribute("tienda", t));
-
+        // Lógica de redirección por ROL (HU8)
         if ("ADMIN".equals(usuario.getRol())) {
+            Optional<Tienda> tiendaOpt = usuarioService.getTiendaPorUsuario(usuario);
+            tiendaOpt.ifPresent(t -> session.setAttribute("tienda", t));
             return "redirect:/admin/panel";
+        } else if ("CLIENTE".equals(usuario.getRol())) {
+            return "redirect:/tienda/catalogo";
         }
+
         return "redirect:/";
     }
 
@@ -83,6 +92,7 @@ public class LoginController {
                                    @RequestParam String nombreTienda,
                                    HttpSession session,
                                    RedirectAttributes redirectAttributes) {
+        
         if (nombre.isBlank() || correo.isBlank() || contrasena.isBlank() || nombreTienda.isBlank()) {
             redirectAttributes.addFlashAttribute("error",
                     messageSource.getMessage("auth.campo.obligatorio", null, Locale.getDefault()));
@@ -101,6 +111,7 @@ public class LoginController {
             return "redirect:/auth/registro";
         }
 
+        // Registro de EMPRENDEDOR (Crea tienda)
         Usuario usuario = usuarioService.registrarEmprendedor(nombre, correo, contrasena, nombreTienda);
         session.setAttribute("usuarioLogueado", usuario);
 
@@ -109,6 +120,7 @@ public class LoginController {
 
         redirectAttributes.addFlashAttribute("todoOk",
                 messageSource.getMessage("auth.registro.exitoso", null, Locale.getDefault()));
+        
         return "redirect:/admin/panel";
     }
 
