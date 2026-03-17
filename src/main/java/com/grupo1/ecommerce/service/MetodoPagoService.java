@@ -40,4 +40,10 @@ public class MetodoPagoService {
     public void delete(Integer id) {
         metodoPagoRepository.deleteById(id);
     }
+    
+    @Transactional(readOnly = true)
+public Optional<MetodoPago> getMetodoPorNombre(String nombre) {
+    // Asegúrate de tener este método definido en tu MetodoPagoRepository
+    return metodoPagoRepository.findByNombre(nombre);
+}
 }

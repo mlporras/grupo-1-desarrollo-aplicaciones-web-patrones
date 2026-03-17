@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{general/fragmentos :: head}"></head>
+<body>
+    <header th:replace="~{general/fragmentos :: header}"></header>
+    <main class="container py-5">
+        <div class="card shadow">
+            <div class="card-header bg-dark text-white"><h3>[[#{checkout.resumen}]]</h3></div>
+            <div class="card-body">
+                <h5>Entregar en: <span class="fw-normal" th:text="${direccion}"></span></h5>
+                <hr>
+                <table class="table">
+                    <thead><tr><th>Producto</th><th>Cant.</th><th>Subtotal</th></tr></thead>
+                    <tbody>
+                        <tr th:each="item : ${items}">
+                            <td th:text="${item.producto.nombre}"></td>
+                            <td th:text="${item.cantidad}"></td>
+                            <td th:text="${'₡' + (item.producto.precio * item.cantidad)}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <h4 class="text-end">Total: <span class="text-success" th:text="${'₡' + total}"></span></h4>
+                
+                <form th:action="@{/tienda/checkout/confirmar}" method="POST" class="mt-4">
+                    <input type="hidden" name="direccion" th:value="${direccion}" />
+                    <h5>Seleccione Método de Pago:</h5>
+                    <div th:each="m : ${metodosPago}" class="form-check">
+                        <input class="form-check-input" type="radio" name="metodoPago" th:value="${m.nombre}" required>
+                        <label class="form-check-label" th:text="${m.nombre}"></label>
+                    </div>
+                    <button type="submit" class="btn btn-success btn-lg w-100 mt-3">CONFIRMAR COMPRA</button>
+                </form>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

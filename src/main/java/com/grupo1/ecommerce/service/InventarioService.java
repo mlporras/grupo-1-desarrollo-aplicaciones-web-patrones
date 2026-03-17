@@ -29,6 +29,14 @@ public class InventarioService {
         return inventarioRepository.findByProducto(producto);
     }
 
+    // HU9/HU10: Método auxiliar para obtener solo el número de stock
+    @Transactional(readOnly = true)
+    public int getStock(Producto producto) {
+        return getInventarioPorProducto(producto)
+                .map(Inventario::getStock)
+                .orElse(0);
+    }
+
     @Transactional(readOnly = true)
     public List<Inventario> getStockBajo() {
         return inventarioRepository.findStockBajo();
@@ -44,6 +52,22 @@ public class InventarioService {
         Inventario inv = inventarioRepository.findByProducto(producto)
                 .orElseThrow(() -> new IllegalArgumentException("Inventario no encontrado para el producto."));
         inv.setStock(nuevoStock);
+        inventarioRepository.save(inv);
+    }
+
+    // --- NUEVO MÉTODO PARA HU10 (Checkout) ---
+    @Transactional
+    public void descontarStock(Producto producto, int cantidad) {
+        Inventario inv = inventarioRepository.findByProducto(producto)
+                .orElseThrow(() -> new IllegalArgumentException("No existe registro de inventario para: " + producto.getNombre()));
+
+        if (inv.getStock() < cantidad) {
+            throw new IllegalStateException("Stock insuficiente para el producto: " + producto.getNombre());
+        }
+
+        int nuevoStock = inv.getStock() - cantidad;
+        inv.setStock(nuevoStock);
+        
         inventarioRepository.save(inv);
     }
 }

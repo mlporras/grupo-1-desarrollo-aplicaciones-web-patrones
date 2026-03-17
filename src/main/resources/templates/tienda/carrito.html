@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+      xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{general/fragmentos :: head}"></head>
+    <body class="d-flex flex-column min-vh-100">
+        <header th:replace="~{general/fragmentos :: header}"></header>
+
+        <main class="container py-5">
+            <div class="row">
+                <div class="col-12">
+                    <h2 class="mb-4">
+                        <i class="fas fa-shopping-basket text-primary me-2"></i>[[#{carrito.titulo}]]
+                    </h2>
+
+                    <div th:if="${items == null or items.empty}" class="alert alert-info shadow-sm py-4">
+                        <h4 class="alert-heading"><i class="fas fa-info-circle me-2"></i>[[#{carrito.vacio}]]</h4>
+                        <p class="mb-0">[[#{carrito.invitacion}]]</p>
+                        <hr>
+                        <a th:href="@{/tienda/catalogo}" class="btn btn-primary">
+                            <i class="fas fa-search me-1"></i>[[#{carrito.comprar}]]
+                        </a>
+                    </div>
+
+                    <div th:if="${items != null and !items.empty}" class="card shadow border-0">
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th class="ps-4">[[#{producto.nombre}]]</th>
+                                            <th class="text-center">[[#{producto.precio}]]</th>
+                                            <th class="text-center" style="width: 180px;">[[#{producto.cantidad}]]</th>
+                                            <th class="text-center">Total</th>
+                                            <th class="text-center pe-4">[[#{accion.eliminar}]]</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="item : ${items}">
+                                            <td class="ps-4">
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fas fa-box text-secondary me-3"></i>
+                                                    <span class="fw-bold" th:text="${item.producto.nombre}"></span>
+                                                </div>
+                                            </td>
+                                            <td class="text-center" th:text="${'₡' + item.producto.precio}"></td>
+                                            <td class="text-center">
+                                                <form th:action="@{/tienda/carrito/actualizar}" method="POST" class="d-flex justify-content-center">
+                                                    <input type="hidden" name="idItem" th:value="${item.idCarritoItem}" />
+                                                    <div class="input-group input-group-sm" style="max-width: 120px;">
+                                                        <input type="number" name="cantidad" th:value="${item.cantidad}" 
+                                                               class="form-control text-center" min="1" required />
+                                                        <button class="btn btn-outline-primary" type="submit">
+                                                            <i class="fas fa-sync-alt"></i>
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </td>
+                                            <td class="text-center fw-bold text-dark" 
+                                                th:text="${'₡' + (item.producto.precio * item.cantidad)}"></td>
+                                            <td class="text-center pe-4">
+                                                <a th:href="@{/tienda/carrito/eliminar/{id}(id=${item.idCarritoItem})}" 
+                                                   class="btn btn-outline-danger btn-sm rounded-pill">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-white py-4 px-4">
+                            <div class="row align-items-center">
+                                <div class="col-md-6">
+                                    <a th:href="@{/tienda/carrito/vaciar}" class="btn btn-link text-danger p-0 text-decoration-none" 
+                                       onclick="return confirm('¿Seguro que deseas vaciar todo el carrito?')">
+                                        <i class="fas fa-eraser me-1"></i>[[#{carrito.vaciar}]]
+                                    </a>
+                                </div>
+                                <div class="col-md-6 text-end">
+                                    <h3 class="mb-3">Total General: <span class="text-success fw-bold" th:text="${'₡' + totalGeneral}"></span></h3>
+                                    <div class="d-grid d-md-block">
+                                        <a th:href="@{/tienda/catalogo}" class="btn btn-outline-secondary me-md-2 mb-2 mb-md-0">
+                                            [[#{accion.regresar}]]
+                                        </a>
+                                        <a th:href="@{/tienda/checkout/envio}" class="btn btn-success btn-lg px-5 shadow-sm">
+                                            <i class="fas fa-check-circle me-2"></i>[[#{carrito.finalizar}]]
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer th:replace="~{general/fragmentos :: footer}"></footer>
+    </body>
+</html>
