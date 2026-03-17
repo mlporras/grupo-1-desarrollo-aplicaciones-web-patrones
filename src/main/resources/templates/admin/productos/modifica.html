@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Editar Producto</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Estilos básicos -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+        }
+
+        .navbar {
+            background-color: #1f3b5c;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .container {
+            width: 400px;
+            margin: 40px auto;
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0px 2px 6px rgba(0,0,0,0.2);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .btn {
+            margin-top: 20px;
+            width: 100%;
+            padding: 10px;
+            background-color: #2d6cdf;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #1b4fa8;
+        }
+
+        .back {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            text-decoration: none;
+            color: #2d6cdf;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <div class="navbar">
+        <h1>Administración - Productos</h1>
+    </div>
+
+    <!-- Formulario -->
+    <div class="container">
+        <h2 th:text="${producto.id == null ? 'Crear Producto' : 'Editar Producto'}"></h2>
+        <form th:action="@{/admin/productos/guardar}" th:object="${producto}" method="post">
+
+            <!-- ID oculto -->
+            <input type="hidden" th:field="*{id}" />
+
+            <!-- Nombre -->
+            <label>Nombre</label>
+            <input type="text" th:field="*{nombre}" required />
+
+            <!-- Precio -->
+            <label>Precio</label>
+            <input type="number" step="0.01" th:field="*{precio}" required />
+
+            <!-- Stock -->
+            <label>Stock</label>
+            <input type="number" th:field="*{stock}" required />
+
+            <!-- Categoría -->
+            <label>Categoría</label>
+            <select th:field="*{categoria}">
+                <option th:each="cat : ${categorias}"
+                        th:value="${cat}"
+                        th:text="${cat.nombre}">
+                </option>
+            </select>
+
+            <!-- Activo -->
+            <label>
+                <input type="checkbox" th:field="*{activo}" />
+                Activo
+            </label>
+
+            <!-- Botón -->
+            <button type="submit" class="btn">Guardar</button>
+
+        </form>
+
+        <a href="/admin/productos/listado" class="back">← Volver al listado</a>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+    "elements": {},
+    "attributes": {
+        "th:text": {},
+        "th:if": {},
+        "th:unless": {},
+        "th:action": {},
+        "th:field": {},
+        "th:each": {},
+        "th:href": {},
+        "th:value": {}
+    }
+}

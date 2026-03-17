@@ -1,43 +1,23 @@
 package com.grupo1.ecommerce.service;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.grupo1.ecommerce.domain.ZonaEnvio;
+import com.grupo1.ecommerce.domain.Envio;
 import com.grupo1.ecommerce.repository.ZonaEnvioRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import java.util.List;
 
 @Service
 public class ZonaEnvioService {
-
-    private final ZonaEnvioRepository zonaEnvioRepository;
-
-    public ZonaEnvioService(ZonaEnvioRepository zonaEnvioRepository) {
-        this.zonaEnvioRepository = zonaEnvioRepository;
+    @Autowired
+    private ZonaEnvioRepository envioDao;
+    public List<Envio> getEnvios(){
+        return envioDao.findAll();
+    }
+    public void save(Envio envio){
+        envioDao.save(envio);
     }
 
-    @Transactional(readOnly = true)
-    public List<ZonaEnvio> getZonasEnvio(boolean soloActivas) {
-        if (soloActivas) {
-            return zonaEnvioRepository.findByActivoTrue();
-        }
-        return zonaEnvioRepository.findAll();
-    }
-
-    @Transactional(readOnly = true)
-    public Optional<ZonaEnvio> getZonaEnvio(Integer id) {
-        return zonaEnvioRepository.findById(id);
-    }
-
-    @Transactional
-    public void save(ZonaEnvio zonaEnvio) {
-        zonaEnvioRepository.save(zonaEnvio);
-    }
-
-    @Transactional
-    public void delete(Integer id) {
-        zonaEnvioRepository.deleteById(id);
+    public Object getZonas() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }

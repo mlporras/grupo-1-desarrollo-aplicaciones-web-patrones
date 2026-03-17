@@ -1,13 +1,9 @@
 package com.grupo1.ecommerce.domain;
 
 import java.io.Serializable;
+import java.util.List;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -32,5 +28,10 @@ public class MetodoPago implements Serializable {
     @Size(max = 255)
     private String descripcion;
 
+    @Column(nullable = false)
     private boolean activo = true;
+
+    //RELACIÓN CON PEDIDOS (HU11)
+    @OneToMany(mappedBy = "metodoPago")
+    private List<Pedido> pedidos;
 }

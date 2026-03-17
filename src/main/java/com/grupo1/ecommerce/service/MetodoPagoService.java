@@ -1,43 +1,27 @@
 package com.grupo1.ecommerce.service;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.grupo1.ecommerce.domain.MetodoPago;
 import com.grupo1.ecommerce.repository.MetodoPagoRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class MetodoPagoService {
 
-    private final MetodoPagoRepository metodoPagoRepository;
+    @Autowired
+    private MetodoPagoRepository metodoPagoDao;
 
-    public MetodoPagoService(MetodoPagoRepository metodoPagoRepository) {
-        this.metodoPagoRepository = metodoPagoRepository;
-    }
-
-    @Transactional(readOnly = true)
-    public List<MetodoPago> getMetodosPago(boolean soloActivos) {
-        if (soloActivos) {
-            return metodoPagoRepository.findByActivoTrue();
+    public List<MetodoPago> getMetodos(boolean activos){
+        if(activos){
+            return metodoPagoDao.findByActivoTrue();
         }
-        return metodoPagoRepository.findAll();
+        return metodoPagoDao.findAll();
     }
 
-    @Transactional(readOnly = true)
-    public Optional<MetodoPago> getMetodoPago(Integer id) {
-        return metodoPagoRepository.findById(id);
-    }
-
-    @Transactional
-    public void save(MetodoPago metodoPago) {
-        metodoPagoRepository.save(metodoPago);
-    }
-
-    @Transactional
-    public void delete(Integer id) {
-        metodoPagoRepository.deleteById(id);
+    public void save(MetodoPago metodo){
+        metodoPagoDao.save(metodo);
     }
 }
