@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{general/fragmentos :: head}"></head>
+<body class="bg-light">
+    <header th:replace="~{general/fragmentos :: header}"></header>
+
+    <main class="container py-5">
+        <div class="row mb-4 align-items-center">
+            <div class="col-md-7">
+                <h2 class="fw-bold"><i class="fas fa-store text-primary me-2"></i>[[#{catalogo.titulo}]]</h2>
+            </div>
+            <div class="col-md-5">
+                <form th:action="@{/tienda/catalogo}" method="GET" class="d-flex shadow-sm">
+                    <select name="idCategoria" class="form-select border-primary" onchange="this.form.submit()">
+                        <option value="" th:text="#{catalogo.todas}">Todas las Categorías</option>
+                        <option th:each="cat : ${categorias}" 
+                                th:value="${cat.idCategoria}" 
+                                th:text="${cat.descripcion}"
+                                th:selected="${cat.idCategoria == categoriaSeleccionada}"></option>
+                    </select>
+                </form>
+            </div>
+        </div>
+
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+            <div class="col" th:each="p : ${productos}">
+                <div class="card h-100 shadow-sm border-0 hover-shadow transition">
+                    <img th:src="${p.rutaImagen}" class="card-img-top p-2" alt="Producto" 
+                         style="height: 200px; object-fit: contain;">
+                    <div class="card-body">
+                        <small class="text-uppercase text-muted" th:text="${p.categoria.descripcion}"></small>
+                        <h5 class="card-title fw-bold" th:text="${p.nombre}"></h5>
+                        <h4 class="text-primary fw-bold" th:text="${'₡' + p.precio}"></h4>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 d-grid gap-2 pb-3">
+                        <a th:href="@{/tienda/producto/{id}(id=${p.idProducto})}" class="btn btn-outline-dark btn-sm">
+                            <i class="fas fa-eye me-1"></i>Ver Detalle
+                        </a>
+                        <form th:action="@{/tienda/carrito/agregar}" method="POST">
+                            <input type="hidden" name="idProducto" th:value="${p.idProducto}" />
+                            <input type="hidden" name="cantidad" value="1" />
+                            <button type="submit" class="btn btn-primary btn-sm w-100">
+                                <i class="fas fa-cart-plus me-1"></i>[[#{producto.agregar}]]
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div th:if="${productos.empty}" class="alert alert-warning text-center mt-5 shadow-sm">
+            <i class="fas fa-exclamation-triangle me-2"></i> No se encontraron productos con stock en esta categoría.
+        </div>
+    </main>
+
+    <footer th:replace="~{general/fragmentos :: footer}"></footer>
+</body>
+</html>
