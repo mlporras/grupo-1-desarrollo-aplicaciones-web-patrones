@@ -1,60 +1,63 @@
 package com.grupo1.ecommerce.service;
 
+import com.grupo1.ecommerce.domain.Producto;
+import com.grupo1.ecommerce.domain.Inventario;
+import com.grupo1.ecommerce.repository.ProductoRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
-
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.grupo1.ecommerce.domain.Categoria;
-import com.grupo1.ecommerce.domain.Producto;
-import com.grupo1.ecommerce.repository.ProductoRepository;
 
 @Service
 public class ProductoService {
 
-    private final ProductoRepository productoRepository;
+    @Autowired
+    private ProductoRepository productoDao;
 
-    public ProductoService(ProductoRepository productoRepository) {
-        this.productoRepository = productoRepository;
-    }
+    @Autowired
+    private InventarioService inventarioService;
 
-    @Transactional(readOnly = true)
-    public List<Producto> getProductos(boolean soloActivos) {
-        if (soloActivos) {
-            return productoRepository.findByActivoTrue();
+    public List<Producto> getProductos(boolean activos) {
+        if (activos) {
+            return productoDao.findByActivoTrue();
         }
-        return productoRepository.findAll();
+        return productoDao.findAll();
     }
 
-    @Transactional(readOnly = true)
-    public List<Producto> getProductosPorCategoria(Categoria categoria, boolean soloActivos) {
-        if (soloActivos) {
-            return productoRepository.findByCategoriaAndActivoTrue(categoria);
-        }
-        return productoRepository.findByCategoria(categoria);
-    }
-
-    @Transactional(readOnly = true)
     public Optional<Producto> getProducto(Integer id) {
-        return productoRepository.findById(id);
+        return productoDao.findById(id);
     }
 
-    @Transactional
     public void save(Producto producto) {
-        productoRepository.save(producto);
+
+        // Guardar producto
+        productoDao.save(producto);
+
+        // Validar que tenga ID
+        if (producto.getId() == null) {
+            return;
+        }
+
+        // Buscar inventario existente
+        Inventario inv = inventarioService.getInventarioPorProducto(producto);
+
+        // Si no existe → crear
+        if (inv == null) {
+            Inventario nuevo = new Inventario();
+            nuevo.setProducto(producto);
+            nuevo.setStock(producto.getStock());
+            nuevo.setStockMinimo(5);
+            inventarioService.save(nuevo);
+        } else {
+            // Si ya existe → actualizar stock
+            inv.setStock(producto.getStock());
+            inventarioService.save(inv);
+        }
     }
 
-    @Transactional
     public void delete(Integer id) {
-        if (!productoRepository.existsById(id)) {
-            throw new IllegalArgumentException("El producto con ID " + id + " no existe.");
-        }
-        try {
-            productoRepository.deleteById(id);
-        } catch (DataIntegrityViolationException e) {
-            throw new IllegalStateException("No se puede eliminar el producto. Tiene datos asociados.", e);
-        }
+        productoDao.deleteById(id);
     }
 }

@@ -1,12 +1,13 @@
 package com.grupo1.ecommerce.repository;
 
+import com.grupo1.ecommerce.domain.Envio;
+import com.grupo1.ecommerce.domain.ZonaEnvio;
 import java.util.List;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.grupo1.ecommerce.domain.ZonaEnvio;
+public interface ZonaEnvioRepository extends JpaRepository<Envio, Integer> {
 
-public interface ZonaEnvioRepository extends JpaRepository<ZonaEnvio, Integer> {
+    public void save(ZonaEnvio zonaEnvio);
 
-    List<ZonaEnvio> findByActivoTrue();
+    public List<ZonaEnvio> findByActivoTrue();
 }

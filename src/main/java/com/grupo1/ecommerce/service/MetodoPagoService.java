@@ -1,13 +1,13 @@
 package com.grupo1.ecommerce.service;
 
-import java.util.List;
-import java.util.Optional;
+import com.grupo1.ecommerce.domain.MetodoPago;
+import com.grupo1.ecommerce.repository.MetodoPagoRepository;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.grupo1.ecommerce.domain.MetodoPago;
-import com.grupo1.ecommerce.repository.MetodoPagoRepository;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class MetodoPagoService {
@@ -42,8 +42,7 @@ public class MetodoPagoService {
     }
     
     @Transactional(readOnly = true)
-public Optional<MetodoPago> getMetodoPorNombre(String nombre) {
-    // Asegúrate de tener este método definido en tu MetodoPagoRepository
-    return metodoPagoRepository.findByNombre(nombre);
-}
+    public Optional<MetodoPago> getMetodoPorNombre(String nombre) {
+        return metodoPagoRepository.findByNombre(nombre);
+    }
 }

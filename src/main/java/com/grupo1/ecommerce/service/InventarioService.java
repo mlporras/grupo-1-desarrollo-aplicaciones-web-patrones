@@ -1,14 +1,14 @@
 package com.grupo1.ecommerce.service;
 
-import java.util.List;
-import java.util.Optional;
+import com.grupo1.ecommerce.domain.Inventario;
+import com.grupo1.ecommerce.domain.Producto;
+import com.grupo1.ecommerce.repository.InventarioRepository;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.grupo1.ecommerce.domain.Inventario;
-import com.grupo1.ecommerce.domain.Producto;
-import com.grupo1.ecommerce.repository.InventarioRepository;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class InventarioService {
@@ -29,7 +29,6 @@ public class InventarioService {
         return inventarioRepository.findByProducto(producto);
     }
 
-    // HU9/HU10: Método auxiliar para obtener solo el número de stock
     @Transactional(readOnly = true)
     public int getStock(Producto producto) {
         return getInventarioPorProducto(producto)
@@ -55,7 +54,6 @@ public class InventarioService {
         inventarioRepository.save(inv);
     }
 
-    // --- NUEVO MÉTODO PARA HU10 (Checkout) ---
     @Transactional
     public void descontarStock(Producto producto, int cantidad) {
         Inventario inv = inventarioRepository.findByProducto(producto)

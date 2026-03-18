@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Inventario</title>
+    <meta charset="UTF-8">
+
+    <style>
+        body {
+            font-family: Arial;
+            background-color: #f4f6f9;
+        }
+
+        .container {
+            width: 90%;
+            margin: 30px auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th {
+            background: #1f3b5c;
+            color: white;
+            padding: 10px;
+        }
+
+        td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        .low-stock {
+            color: red;
+            font-weight: bold;
+        }
+
+        input {
+            width: 60px;
+        }
+
+        button {
+            padding: 5px 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>Inventario</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Stock</th>
+                <th>Mínimo</th>
+                <th>Alerta</th>
+                <th>Actualizar</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr th:each="inv : ${inventarios}">
+                <td th:text="${inv.producto.nombre}"></td>
+
+                <td th:text="${inv.stock}"></td>
+
+                <td th:text="${inv.stockMinimo}"></td>
+
+                <!-- ALERTA -->
+                <td>
+                    <span th:if="${inv.stock <= inv.stockMinimo}" class="low-stock">
+                        Bajo
+                    </span>
+                    <span th:unless="${inv.stock <= inv.stockMinimo}">
+                        OK
+                    </span>
+                </td>
+
+                <!-- FORM ACTUALIZAR -->
+                <td>
+                    <form th:action="@{/admin/inventario/guardar}" method="post">
+                        <input type="hidden" name="id" th:value="${inv.id}" />
+                        <input type="number" name="stock" th:value="${inv.stock}" />
+                        <button type="submit">Guardar</button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+
+    </table>
+
+</div>
+
+</body>
+</html>
