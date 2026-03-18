@@ -7,6 +7,7 @@ com\grupo1\ecommerce\repository\ProductoRepository.class
 com\grupo1\ecommerce\domain\DetallePedido.class
 com\grupo1\ecommerce\service\CarritoService.class
 com\grupo1\ecommerce\service\PedidoService.class
+com\grupo1\ecommerce\controller\CatalogoController.class
 com\grupo1\ecommerce\repository\CarritoItemRepository.class
 com\grupo1\ecommerce\domain\Categoria.class
 com\grupo1\ecommerce\repository\ZonaEnvioRepository.class

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{general/fragmentos :: head}"/>
+<body>
+    <header th:replace="~{general/fragmentos :: header}"/>
+
+    <main class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow">
+                    <div class="card-header modal-dark text-center">
+                        <h4 class="mb-0"><i class="fas fa-user-plus me-2"></i>[[#{auth.crearCuenta}]]</h4>
+                    </div>
+                    <div class="card-body p-4">
+                        <form th:action="@{/auth/registro}" method="post">
+                            <div class="mb-3">
+                                <label for="nombre" class="form-label">[[#{auth.nombre}]]</label>
+                                <input type="text" class="form-control" id="nombre" name="nombre"
+                                       th:placeholder="#{auth.nombre.placeholder}" required/>
+                            </div>
+                            <div class="mb-3">
+                                <label for="correo" class="form-label">[[#{auth.correo}]]</label>
+                                <input type="email" class="form-control" id="correo" name="correo"
+                                       th:placeholder="#{auth.correo.placeholder}" required/>
+                            </div>
+                            <div class="mb-3">
+                                <label for="contrasena" class="form-label">[[#{auth.contrasena}]]</label>
+                                <input type="password" class="form-control" id="contrasena" name="contrasena"
+                                       minlength="8" th:placeholder="#{auth.contrasena.placeholder}" required/>
+                                <div class="form-text">[[#{auth.contrasena.ayuda}]]</div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="nombreTienda" class="form-label">[[#{auth.nombreTienda}]]</label>
+                                <input type="text" class="form-control" id="nombreTienda" name="nombreTienda"
+                                       th:placeholder="#{auth.nombreTienda.placeholder}" required/>
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-user-plus me-1"></i>[[#{auth.crearCuenta}]]
+                                </button>
+                            </div>
+                        </form>
+                        <hr/>
+                        <div class="text-center">
+                            <span>[[#{auth.yaCuenta}]] </span>
+                            <a th:href="@{/auth/login}">[[#{auth.iniciarSesion}]]</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{general/fragmentos :: mostrarToast}"/>
+    <footer th:replace="~{general/fragmentos :: footer}"/>
+</body>
+</html>
