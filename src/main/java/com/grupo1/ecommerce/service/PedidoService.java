@@ -1,70 +1,63 @@
 package com.grupo1.ecommerce.service;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.grupo1.ecommerce.domain.DetallePedido;
 import com.grupo1.ecommerce.domain.Pedido;
-import com.grupo1.ecommerce.domain.Usuario;
-import com.grupo1.ecommerce.repository.DetallePedidoRepository;
+import com.grupo1.ecommerce.domain.PedidoDetalle;
 import com.grupo1.ecommerce.repository.PedidoRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 public class PedidoService {
 
-    private final PedidoRepository pedidoRepository;
-    private final DetallePedidoRepository detallePedidoRepository;
+    @Autowired
+    private PedidoRepository pedidoDao;
 
-    public PedidoService(PedidoRepository pedidoRepository, DetallePedidoRepository detallePedidoRepository) {
-        this.pedidoRepository = pedidoRepository;
-        this.detallePedidoRepository = detallePedidoRepository;
+    public List<Pedido> getPedidos(){
+        return pedidoDao.findAllByOrderByFechaPedidoDesc();
     }
 
-    @Transactional(readOnly = true)
-    public List<Pedido> getTodosPedidos() {
-        return pedidoRepository.findAllByOrderByFechaPedidoDesc();
-    }
+    public void save(Pedido pedido){
 
-    @Transactional(readOnly = true)
-    public List<Pedido> getPedidosPorUsuario(Usuario usuario) {
-        return pedidoRepository.findByUsuario(usuario);
-    }
+        BigDecimal subtotal = BigDecimal.ZERO;
 
-    @Transactional(readOnly = true)
-    public List<Pedido> getPedidosPorEstado(String estado) {
-        return pedidoRepository.findByEstado(estado);
-    }
+        // CALCULAR SUBTOTAL DESDE DETALLES
+        if (pedido.getDetalles() != null) {
+            for (PedidoDetalle d : pedido.getDetalles()) {
 
-    @Transactional(readOnly = true)
-    public Optional<Pedido> getPedido(Integer id) {
-        return pedidoRepository.findById(id);
-    }
+                // subtotal por línea
+                BigDecimal sub = d.getPrecio()
+                        .multiply(BigDecimal.valueOf(d.getCantidad()));
 
-    @Transactional(readOnly = true)
-    public Optional<Pedido> getPedidoPorNumero(String numeroPedido) {
-        return pedidoRepository.findByNumeroPedido(numeroPedido);
-    }
+                d.setSubtotal(sub);
 
-    @Transactional(readOnly = true)
-    public List<DetallePedido> getDetallesPedido(Pedido pedido) {
-        return detallePedidoRepository.findByPedido(pedido);
-    }
+                // acumular
+                subtotal = subtotal.add(sub);
 
-    @Transactional
-    public void savePedido(Pedido pedido) {
-        pedidoRepository.save(pedido);
-    }
+                // asignar relación
+                d.setPedido(pedido);
+            }
+        }
 
-    @Transactional
-    public void saveDetalle(DetallePedido detalle) {
-        detallePedidoRepository.save(detalle);
-    }
+        pedido.setSubtotal(subtotal);
 
-    public String generarNumeroPedido() {
-        long count = pedidoRepository.count() + 1;
-        return String.format("PED-%06d", count);
+        // COSTO ENVÍO DESDE ZONA
+        if (pedido.getZonaEnvio() != null) {
+            pedido.setCostoEnvio(
+                BigDecimal.valueOf(pedido.getZonaEnvio().getCosto())
+            );
+        } else {
+            pedido.setCostoEnvio(BigDecimal.ZERO);
+        }
+
+        // TOTAL FINAL
+        pedido.setTotal(
+            pedido.getSubtotal().add(pedido.getCostoEnvio())
+        );
+
+        pedidoDao.save(pedido);
     }
 }

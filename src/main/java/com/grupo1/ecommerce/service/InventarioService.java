@@ -1,49 +1,29 @@
 package com.grupo1.ecommerce.service;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.grupo1.ecommerce.domain.Inventario;
 import com.grupo1.ecommerce.domain.Producto;
 import com.grupo1.ecommerce.repository.InventarioRepository;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
 @Service
 public class InventarioService {
 
-    private final InventarioRepository inventarioRepository;
+    @Autowired
+    private InventarioRepository inventarioDao;
 
-    public InventarioService(InventarioRepository inventarioRepository) {
-        this.inventarioRepository = inventarioRepository;
+    public List<Inventario> getInventarios() {
+        return inventarioDao.findAll();
     }
 
-    @Transactional(readOnly = true)
-    public List<Inventario> getTodos() {
-        return inventarioRepository.findAll();
-    }
-
-    @Transactional(readOnly = true)
-    public Optional<Inventario> getInventarioPorProducto(Producto producto) {
-        return inventarioRepository.findByProducto(producto);
-    }
-
-    @Transactional(readOnly = true)
-    public List<Inventario> getStockBajo() {
-        return inventarioRepository.findStockBajo();
-    }
-
-    @Transactional
     public void save(Inventario inventario) {
-        inventarioRepository.save(inventario);
+        inventarioDao.save(inventario);
     }
 
-    @Transactional
-    public void actualizarStock(Producto producto, int nuevoStock) {
-        Inventario inv = inventarioRepository.findByProducto(producto)
-                .orElseThrow(() -> new IllegalArgumentException("Inventario no encontrado para el producto."));
-        inv.setStock(nuevoStock);
-        inventarioRepository.save(inv);
+    public Inventario getInventarioPorProducto(Producto producto) {
+        return inventarioDao.findByProducto(producto);
     }
 }

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Nuevo Pedido</title>
+    <meta charset="UTF-8">
+</head>
+
+<body>
+
+<h2>Crear Pedido</h2>
+
+<form th:action="@{/admin/pedidos/guardar}" th:object="${pedido}" method="post">
+
+    <!-- NUMERO -->
+    <label>Número Pedido:</label>
+    <input type="text" th:field="*{numeroPedido}" required/>
+    <br/><br/>
+
+    <!-- USUARIO (MANUAL POR AHORA) -->
+    <label>ID Usuario:</label>
+    <input type="number" th:field="*{usuario.idUsuario}" required/>
+    <br/><br/>
+
+    <!-- METODO PAGO -->
+    <label>Método de Pago:</label>
+    <select th:field="*{metodoPago}">
+        <option value="">Seleccione</option>
+        <option th:each="m : ${metodos}"
+                th:value="${m.idMetodoPago}"
+                th:text="${m.nombre}">
+        </option>
+    </select>
+    <br/><br/>
+
+    <!-- ZONA ENVIO -->
+    <label>Zona de Envío:</label>
+    <select th:field="*{zonaEnvio}">
+        <option value="">Seleccione</option>
+        <option th:each="z : ${zonas}"
+                th:value="${z.idZonaEnvio}"
+                th:text="${z.nombre}">
+        </option>
+    </select>
+    <br/><br/>
+
+    <!-- DIRECCION -->
+    <label>Dirección:</label>
+    <input type="text" th:field="*{direccionEnvio}" required/>
+    <br/><br/>
+
+    <!-- TELEFONO -->
+    <label>Teléfono:</label>
+    <input type="text" th:field="*{telefonoEnvio}"/>
+    <br/><br/>
+
+    <!-- SUBTOTAL (LO CALCULA EL SERVICE) -->
+    <input type="hidden" th:field="*{subtotal}"/>
+
+    <!-- COSTO ENVIO -->
+    <input type="hidden" th:field="*{costoEnvio}"/>
+
+    <!-- TOTAL -->
+    <input type="hidden" th:field="*{total}"/>
+
+    <!-- ESTADO -->
+    <input type="hidden" th:field="*{estado}" value="PENDIENTE"/>
+
+    <button type="submit">Guardar</button>
+
+</form>
+
+</body>
+</html>

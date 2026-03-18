@@ -3,15 +3,9 @@ package com.grupo1.ecommerce.domain;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -34,6 +28,10 @@ public class Pedido implements Serializable {
     @Column(name = "numero_pedido", nullable = false, length = 20, unique = true)
     private String numeroPedido;
 
+    // =========================
+    // RELACIONES
+    // =========================
+
     @ManyToOne
     @JoinColumn(name = "id_usuario", nullable = false)
     @NotNull
@@ -47,6 +45,14 @@ public class Pedido implements Serializable {
     @JoinColumn(name = "id_zona_envio")
     private ZonaEnvio zonaEnvio;
 
+    // DETALLE DEL PEDIDO (HU11)
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
+    private List<PedidoDetalle> detalles;
+
+    // =========================
+    // DATOS DE ENVÍO
+    // =========================
+
     @NotBlank(message = "La dirección de envío es obligatoria.")
     @Size(max = 255)
     @Column(name = "direccion_envio", nullable = false)
@@ -55,6 +61,10 @@ public class Pedido implements Serializable {
     @Size(max = 20)
     @Column(name = "telefono_envio", length = 20)
     private String telefonoEnvio;
+
+    // =========================
+    // MONTOS
+    // =========================
 
     @NotNull
     @Column(nullable = false, precision = 10, scale = 2)
@@ -67,6 +77,10 @@ public class Pedido implements Serializable {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal total;
 
+    // =========================
+    // ESTADO Y FECHAS
+    // =========================
+
     @Column(nullable = false)
     private String estado = "PENDIENTE";
 
@@ -75,4 +89,19 @@ public class Pedido implements Serializable {
 
     @Column(name = "fecha_actualizacion")
     private LocalDateTime fechaActualizacion;
+
+    // =========================
+    // MÉTODOS AUTOMÁTICOS
+    // =========================
+
+    @PrePersist
+    public void prePersist() {
+        this.fechaPedido = LocalDateTime.now();
+        this.fechaActualizacion = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.fechaActualizacion = LocalDateTime.now();
+    }
 }

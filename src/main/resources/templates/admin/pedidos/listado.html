@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Pedidos</title>
+    <meta charset="UTF-8">
+</head>
+
+<body>
+
+<h2>Lista de Pedidos</h2>
+
+<a href="/admin/pedidos/nuevo">+ Nuevo Pedido</a>
+
+<table border="1">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Número</th>
+            <th>Usuario</th>
+            <th>Método Pago</th>
+            <th>Zona Envío</th>
+            <th>Total</th>
+            <th>Estado</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <tr th:each="p : ${pedidos}">
+            <td th:text="${p.idPedido}"></td>
+            <td th:text="${p.numeroPedido}"></td>
+            <td th:text="${p.usuario.nombre}"></td>
+            <td th:text="${p.metodoPago != null ? p.metodoPago.nombre : 'N/A'}"></td>
+            <td th:text="${p.zonaEnvio != null ? p.zonaEnvio.nombre : 'N/A'}"></td>
+            <td th:text="${p.total}"></td>
+            <td th:text="${p.estado}"></td>
+        </tr>
+
+        <tr th:if="${#lists.isEmpty(pedidos)}">
+            <td colspan="7">No hay pedidos</td>
+        </tr>
+    </tbody>
+</table>
+
+</body>
+</html>
