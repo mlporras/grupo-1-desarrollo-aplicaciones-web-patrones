@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{general/fragmentos :: head}"></head>
+<body>
+    <header th:replace="~{general/fragmentos :: header}"></header>
+    <main class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h3 class="card-title text-center mb-4">[[#{checkout.envio}]]</h3>
+                        <form th:action="@{/tienda/checkout/resumen}" method="POST">
+                            <div class="mb-3">
+                                <label class="form-label">Dirección de Entrega</label>
+                                <textarea name="direccion" class="form-control" rows="3" required placeholder="Provincia, Cantón, Distrito y señas exactas..."></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Zona de Envío</label>
+                                <select name="idZona" class="form-select" required>
+                                    <option th:each="z : ${zonas}" th:value="${z.idZonaEnvio}" th:text="${z.nombre}"></option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Continuar al Resumen</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

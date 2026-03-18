@@ -4,26 +4,68 @@ import com.grupo1.ecommerce.domain.Inventario;
 import com.grupo1.ecommerce.domain.Producto;
 import com.grupo1.ecommerce.repository.InventarioRepository;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class InventarioService {
 
-    @Autowired
-    private InventarioRepository inventarioDao;
+    private final InventarioRepository inventarioRepository;
 
-    public List<Inventario> getInventarios() {
-        return inventarioDao.findAll();
+    public InventarioService(InventarioRepository inventarioRepository) {
+        this.inventarioRepository = inventarioRepository;
     }
 
+    @Transactional(readOnly = true)
+    public List<Inventario> getTodos() {
+        return inventarioRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Inventario> getInventarioPorProducto(Producto producto) {
+        return inventarioRepository.findByProducto(producto);
+    }
+
+    @Transactional(readOnly = true)
+    public int getStock(Producto producto) {
+        return getInventarioPorProducto(producto)
+                .map(Inventario::getStock)
+                .orElse(0);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Inventario> getStockBajo() {
+        return inventarioRepository.findStockBajo();
+    }
+
+    @Transactional
     public void save(Inventario inventario) {
-        inventarioDao.save(inventario);
+        inventarioRepository.save(inventario);
     }
 
-    public Inventario getInventarioPorProducto(Producto producto) {
-        return inventarioDao.findByProducto(producto);
+    @Transactional
+    public void actualizarStock(Producto producto, int nuevoStock) {
+        Inventario inv = inventarioRepository.findByProducto(producto)
+                .orElseThrow(() -> new IllegalArgumentException("Inventario no encontrado para el producto."));
+        inv.setStock(nuevoStock);
+        inventarioRepository.save(inv);
+    }
+
+    @Transactional
+    public void descontarStock(Producto producto, int cantidad) {
+        Inventario inv = inventarioRepository.findByProducto(producto)
+                .orElseThrow(() -> new IllegalArgumentException("No existe registro de inventario para: " + producto.getNombre()));
+
+        if (inv.getStock() < cantidad) {
+            throw new IllegalStateException("Stock insuficiente para el producto: " + producto.getNombre());
+        }
+
+        int nuevoStock = inv.getStock() - cantidad;
+        inv.setStock(nuevoStock);
+        
+        inventarioRepository.save(inv);
     }
 }

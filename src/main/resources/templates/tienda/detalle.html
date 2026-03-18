@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{general/fragmentos :: head}"></head>
+<body class="bg-light">
+    <header th:replace="~{general/fragmentos :: header}"></header>
+
+    <main class="container py-5">
+        <div class="card shadow border-0 overflow-hidden">
+            <div class="row g-0">
+                <div class="col-md-6 bg-white d-flex align-items-center justify-content-center p-4">
+                    <img th:src="${producto.rutaImagen}" class="img-fluid rounded shadow-sm" style="max-height: 500px;">
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card-body p-5">
+                        <nav aria-label="breadcrumb" class="mb-3">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a th:href="@{/tienda/catalogo}">Tienda</a></li>
+                                <li class="breadcrumb-item active" th:text="${producto.categoria.descripcion}"></li>
+                            </ol>
+                        </nav>
+                        
+                        <h1 class="display-5 fw-bold mb-3" th:text="${producto.nombre}"></h1>
+                        <h2 class="text-success mb-4 fw-bold" th:text="${'₡' + producto.precio}"></h2>
+                        
+                        <div class="mb-4">
+                            <h5 class="fw-bold">[[#{producto.detalle}]]:</h5>
+                            <p class="lead text-muted" th:text="${producto.detalle}"></p>
+                        </div>
+
+                        <div class="alert alert-secondary d-inline-block py-2">
+                            <i class="fas fa-boxes me-2"></i>[[#{producto.stock}]]: 
+                            <span class="fw-bold" th:text="${stock}"></span> unidades
+                        </div>
+
+                        <hr class="my-4">
+
+                        <form th:action="@{/tienda/carrito/agregar}" method="POST" class="row g-3">
+                            <input type="hidden" name="idProducto" th:value="${producto.idProducto}" />
+                            
+                            <div class="col-12 col-sm-4">
+                                <label class="form-label fw-bold">Cantidad:</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-sort-numeric-up"></i></span>
+                                    <input type="number" name="cantidad" value="1" class="form-control" 
+                                           min="1" th:max="${stock}" required />
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 col-sm-8 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary btn-lg w-100 shadow">
+                                    <i class="fas fa-shopping-cart me-2"></i>[[#{producto.agregar}]]
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <div class="mt-4">
+                            <a th:href="@{/tienda/catalogo}" class="btn btn-link text-decoration-none p-0 text-muted">
+                                <i class="fas fa-arrow-left me-1"></i> Volver al catálogo
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{general/fragmentos :: footer}"></footer>
+</body>
+</html>

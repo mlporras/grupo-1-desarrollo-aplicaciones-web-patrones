@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{general/fragmentos :: head}"></head>
+<body class="bg-light d-flex flex-column min-vh-100">
+    <header th:replace="~{general/fragmentos :: header}"></header>
+
+    <main class="container my-auto py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-5 col-lg-4">
+                <div class="card shadow-lg border-0 rounded-lg">
+                    <div class="card-header bg-primary text-white text-center py-4">
+                        <i class="fas fa-user-circle fa-3x mb-2"></i>
+                        <h3 class="fw-bold mb-0">[[#{login.titulo}]]</h3>
+                    </div>
+                    <div class="card-body p-4">
+                        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            <span th:text="${error}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+
+                        <form th:action="@{/auth/login}" method="POST">
+                            <div class="mb-3">
+                                <label for="username" class="form-label fw-bold">[[#{usuario.nombre}]]</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                    <input type="text" id="username" name="username" class="form-control" 
+                                           placeholder="nombre@ejemplo.com" required autofocus>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="password" class="form-label fw-bold">[[#{usuario.password}]]</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                    <input type="password" id="password" name="password" class="form-control" 
+                                           placeholder="••••••••" required>
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg shadow-sm">
+                                    <i class="fas fa-sign-in-alt me-2"></i>[[#{login.boton}]]
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="card-footer text-center py-3 bg-white">
+                        <p class="mb-0 text-muted">
+                            [[#{login.no_cuenta}]] 
+                            <a th:href="@{/auth/registro}" class="text-primary fw-bold text-decoration-none">[[#{login.registrate}]]</a>
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <a th:href="@{/tienda/catalogo}" class="text-muted text-decoration-none small">
+                        <i class="fas fa-arrow-left me-1"></i> Volver a la tienda
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{general/fragmentos :: footer}"></footer>
+</body>
+</html>

@@ -1,50 +1,116 @@
 package com.grupo1.ecommerce.service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.grupo1.ecommerce.domain.CarritoItem;
+import com.grupo1.ecommerce.domain.DetallePedido;
 import com.grupo1.ecommerce.domain.Pedido;
 import com.grupo1.ecommerce.domain.PedidoDetalle;
+import com.grupo1.ecommerce.domain.Usuario;
+import com.grupo1.ecommerce.repository.DetallePedidoRepository;
 import com.grupo1.ecommerce.repository.PedidoRepository;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
-import java.util.List;
 
 @Service
 public class PedidoService {
 
-    @Autowired
-    private PedidoRepository pedidoDao;
+    private final PedidoRepository pedidoRepository;
+    private final DetallePedidoRepository detallePedidoRepository;
+    private final CarritoService carritoService;
+    private final InventarioService inventarioService;
+    private final MetodoPagoService metodoPagoService;
 
-    public List<Pedido> getPedidos(){
-        return pedidoDao.findAllByOrderByFechaPedidoDesc();
+    public PedidoService(PedidoRepository pedidoRepository,
+                         DetallePedidoRepository detallePedidoRepository,
+                         CarritoService carritoService,
+                         InventarioService inventarioService,
+                         MetodoPagoService metodoPagoService) {
+        this.pedidoRepository = pedidoRepository;
+        this.detallePedidoRepository = detallePedidoRepository;
+        this.carritoService = carritoService;
+        this.inventarioService = inventarioService;
+        this.metodoPagoService = metodoPagoService;
     }
 
-    public void save(Pedido pedido){
+    @Transactional
+    public Pedido procesarCompra(Usuario usuario, String direccion, String metodoPago) {
+        List<CarritoItem> items = carritoService.getItemsPorUsuario(usuario);
+        if (items.isEmpty()) {
+            throw new IllegalStateException("El carrito está vacío.");
+        }
 
+        Pedido pedido = new Pedido();
+        pedido.setUsuario(usuario);
+        pedido.setNumeroPedido(generarNumeroPedido());
+        pedido.setFechaPedido(LocalDateTime.now());
+        pedido.setDireccionEnvio(direccion);
+
+        metodoPagoService.getMetodoPorNombre(metodoPago)
+                         .ifPresent(pedido::setMetodoPago);
+
+        pedido.setEstado("PAGADO");
+        pedido.setTotal(BigDecimal.valueOf(carritoService.calcularTotal(usuario)));
+
+        Pedido pedidoGuardado = pedidoRepository.save(pedido);
+
+        for (CarritoItem item : items) {
+            DetallePedido detalle = new DetallePedido();
+            detalle.setPedido(pedidoGuardado);
+            detalle.setProducto(item.getProducto());
+            detalle.setCantidad(item.getCantidad());
+            detalle.setPrecioUnitario(item.getProducto().getPrecio());
+            detallePedidoRepository.save(detalle);
+
+            inventarioService.descontarStock(item.getProducto(), item.getCantidad());
+        }
+
+        carritoService.vaciarCarrito(usuario);
+
+        return pedidoGuardado;
+    }
+
+    @Transactional(readOnly = true)
+    public List<Pedido> getTodosPedidos() {
+        return pedidoRepository.findAllByOrderByFechaPedidoDesc();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Pedido> getPedidosPorUsuario(Usuario usuario) {
+        return pedidoRepository.findByUsuario(usuario);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Pedido> getPedido(Integer id) {
+        return pedidoRepository.findById(id);
+    }
+
+    public String generarNumeroPedido() {
+        long count = pedidoRepository.count() + 1;
+        return String.format("PED-%06d", count);
+    }
+
+    public void save(Pedido pedido) {
         BigDecimal subtotal = BigDecimal.ZERO;
 
-        // CALCULAR SUBTOTAL DESDE DETALLES
         if (pedido.getDetalles() != null) {
             for (PedidoDetalle d : pedido.getDetalles()) {
-
-                // subtotal por línea
                 BigDecimal sub = d.getPrecio()
                         .multiply(BigDecimal.valueOf(d.getCantidad()));
 
                 d.setSubtotal(sub);
-
-                // acumular
                 subtotal = subtotal.add(sub);
-
-                // asignar relación
                 d.setPedido(pedido);
             }
         }
 
         pedido.setSubtotal(subtotal);
 
-        // COSTO ENVÍO DESDE ZONA
         if (pedido.getZonaEnvio() != null) {
             pedido.setCostoEnvio(
                 BigDecimal.valueOf(pedido.getZonaEnvio().getCosto())
@@ -53,11 +119,10 @@ public class PedidoService {
             pedido.setCostoEnvio(BigDecimal.ZERO);
         }
 
-        // TOTAL FINAL
         pedido.setTotal(
             pedido.getSubtotal().add(pedido.getCostoEnvio())
         );
 
-        pedidoDao.save(pedido);
+        pedidoRepository.save(pedido);
     }
 }
