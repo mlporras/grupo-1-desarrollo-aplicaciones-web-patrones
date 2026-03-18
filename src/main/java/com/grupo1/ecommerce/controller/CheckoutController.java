@@ -2,6 +2,7 @@ package com.grupo1.ecommerce.controller;
 
 import com.grupo1.ecommerce.domain.Pedido;
 import com.grupo1.ecommerce.domain.Usuario;
+import com.grupo1.ecommerce.domain.ZonaEnvio;
 import com.grupo1.ecommerce.service.CarritoService;
 import com.grupo1.ecommerce.service.MetodoPagoService;
 import com.grupo1.ecommerce.service.PedidoService;
@@ -20,7 +21,7 @@ public class CheckoutController {
     private final ZonaEnvioService zonaEnvioService;
     private final MetodoPagoService metodoPagoService;
 
-    public CheckoutController(CarritoService carritoService, PedidoService pedidoService, 
+    public CheckoutController(CarritoService carritoService, PedidoService pedidoService,
                               ZonaEnvioService zonaEnvioService, MetodoPagoService metodoPagoService) {
         this.carritoService = carritoService;
         this.pedidoService = pedidoService;
@@ -32,37 +33,57 @@ public class CheckoutController {
     public String mostrarEnvio(HttpSession session, Model model) {
         Usuario usuario = (Usuario) session.getAttribute("usuarioLogueado");
         if (usuario == null) return "redirect:/auth/login";
-        
+
         if (carritoService.getItemsPorUsuario(usuario).isEmpty()) {
             return "redirect:/tienda/carrito";
         }
 
-       model.addAttribute("zonas", zonaEnvioService.getZonasEnvio(true));
+        model.addAttribute("zonas", zonaEnvioService.getZonasEnvio(true));
         return "/tienda/checkout/envio";
     }
 
     @PostMapping("/resumen")
-    public String mostrarResumen(@RequestParam String direccion, 
+    public String mostrarResumen(@RequestParam String direccion,
+                                 @RequestParam(required = false) Integer idZona,
                                  HttpSession session, Model model) {
         Usuario usuario = (Usuario) session.getAttribute("usuarioLogueado");
-        
+        if (usuario == null) return "redirect:/auth/login";
+
+        ZonaEnvio zona = null;
+        if (idZona != null) {
+            zona = zonaEnvioService.getZonaEnvio(idZona).orElse(null);
+        }
+
         model.addAttribute("items", carritoService.getItemsPorUsuario(usuario));
         model.addAttribute("total", carritoService.calcularTotal(usuario));
         model.addAttribute("direccion", direccion);
+        model.addAttribute("idZona", idZona);
+        model.addAttribute("zona", zona);
         model.addAttribute("metodosPago", metodoPagoService.getMetodosPago(true));
-        
+
         return "/tienda/checkout/resumen";
     }
 
     @PostMapping("/confirmar")
-    public String confirmarPedido(@RequestParam String direccion, 
-                                  @RequestParam String metodoPago, 
+    public String confirmarPedido(@RequestParam String direccion,
+                                  @RequestParam String metodoPago,
+                                  @RequestParam(required = false) Integer idZona,
                                   HttpSession session, Model model) {
         Usuario usuario = (Usuario) session.getAttribute("usuarioLogueado");
-        
+        if (usuario == null) return "redirect:/auth/login";
+
         try {
             Pedido pedido = pedidoService.procesarCompra(usuario, direccion, metodoPago);
-            session.setAttribute("itemsCarritoCount", 0); // Limpiar contador navbar
+
+            if (idZona != null) {
+                zonaEnvioService.getZonaEnvio(idZona).ifPresent(zona -> {
+                    pedido.setZonaEnvio(zona);
+                    pedido.setCostoEnvio(zona.getCostoEnvio());
+                    pedido.setTotal(pedido.getSubtotal().add(zona.getCostoEnvio()));
+                });
+            }
+
+            session.setAttribute("itemsCarritoCount", 0);
             model.addAttribute("pedido", pedido);
             return "/tienda/checkout/confirmacion";
         } catch (Exception e) {

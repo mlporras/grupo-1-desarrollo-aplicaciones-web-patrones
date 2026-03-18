@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Zona de Envío</title>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial; background-color: #f4f6f9; }
+        .container { width: 400px; margin: 40px auto; background: white; padding: 25px; border-radius: 8px; box-shadow: 0px 2px 6px rgba(0,0,0,0.2); }
+        label { display: block; margin-top: 10px; font-weight: bold; }
+        input { width: 100%; padding: 8px; margin-top: 5px; border-radius: 5px; border: 1px solid #ccc; }
+        .btn { margin-top: 20px; width: 100%; padding: 10px; background-color: #2d6cdf; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .btn:hover { background-color: #1b4fa8; }
+        .back { display: block; text-align: center; margin-top: 15px; text-decoration: none; color: #2d6cdf; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2 style="text-align:center;">Zona de Envío</h2>
+    <form th:action="@{/admin/envios/guardar}" th:object="${zona}" method="post">
+        <input type="hidden" th:field="*{idZonaEnvio}" />
+
+        <label>Nombre</label>
+        <input type="text" th:field="*{nombre}" required />
+
+        <label>Descripción</label>
+        <input type="text" th:field="*{descripcion}" />
+
+        <label>Costo de Envío</label>
+        <input type="number" step="0.01" th:field="*{costoEnvio}" required />
+
+        <label>
+            <input type="checkbox" th:field="*{activo}" />
+            Activa
+        </label>
+
+        <button type="submit" class="btn">Guardar</button>
+    </form>
+
+    <a href="/admin/envios/listado" class="back">← Volver al listado</a>
+</div>
+</body>
+</html>

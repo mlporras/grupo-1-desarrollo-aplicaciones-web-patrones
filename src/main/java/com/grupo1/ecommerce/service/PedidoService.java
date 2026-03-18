@@ -8,9 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.grupo1.ecommerce.domain.CarritoItem;
-import com.grupo1.ecommerce.domain.DetallePedido;
-import com.grupo1.ecommerce.domain.Pedido;
 import com.grupo1.ecommerce.domain.PedidoDetalle;
+import com.grupo1.ecommerce.domain.Pedido;
 import com.grupo1.ecommerce.domain.Usuario;
 import com.grupo1.ecommerce.repository.DetallePedidoRepository;
 import com.grupo1.ecommerce.repository.PedidoRepository;
@@ -45,6 +44,8 @@ public class PedidoService {
             throw new IllegalStateException("El carrito está vacío.");
         }
 
+        BigDecimal subtotal = BigDecimal.ZERO;
+
         Pedido pedido = new Pedido();
         pedido.setUsuario(usuario);
         pedido.setNumeroPedido(generarNumeroPedido());
@@ -55,20 +56,33 @@ public class PedidoService {
                          .ifPresent(pedido::setMetodoPago);
 
         pedido.setEstado("PAGADO");
-        pedido.setTotal(BigDecimal.valueOf(carritoService.calcularTotal(usuario)));
+        pedido.setCostoEnvio(BigDecimal.ZERO);
 
+        // First save to get the ID for detail references
+        pedido.setSubtotal(BigDecimal.ZERO);
+        pedido.setTotal(BigDecimal.ZERO);
         Pedido pedidoGuardado = pedidoRepository.save(pedido);
 
         for (CarritoItem item : items) {
-            DetallePedido detalle = new DetallePedido();
+            BigDecimal precio = item.getProducto().getPrecio();
+            BigDecimal sub = precio.multiply(BigDecimal.valueOf(item.getCantidad()));
+
+            PedidoDetalle detalle = new PedidoDetalle();
             detalle.setPedido(pedidoGuardado);
             detalle.setProducto(item.getProducto());
             detalle.setCantidad(item.getCantidad());
-            detalle.setPrecioUnitario(item.getProducto().getPrecio());
+            detalle.setPrecio(precio);
+            detalle.setSubtotal(sub);
             detallePedidoRepository.save(detalle);
+
+            subtotal = subtotal.add(sub);
 
             inventarioService.descontarStock(item.getProducto(), item.getCantidad());
         }
+
+        pedidoGuardado.setSubtotal(subtotal);
+        pedidoGuardado.setTotal(subtotal.add(pedidoGuardado.getCostoEnvio()));
+        pedidoRepository.save(pedidoGuardado);
 
         carritoService.vaciarCarrito(usuario);
 
@@ -112,9 +126,7 @@ public class PedidoService {
         pedido.setSubtotal(subtotal);
 
         if (pedido.getZonaEnvio() != null) {
-            pedido.setCostoEnvio(
-                BigDecimal.valueOf(pedido.getZonaEnvio().getCosto())
-            );
+            pedido.setCostoEnvio(pedido.getZonaEnvio().getCostoEnvio());
         } else {
             pedido.setCostoEnvio(BigDecimal.ZERO);
         }

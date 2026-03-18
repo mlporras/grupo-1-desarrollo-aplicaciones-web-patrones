@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Métodos de Pago</title>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial; background-color: #f4f6f9; }
+        .container { width: 90%; margin: 30px auto; }
+        table { width: 100%; border-collapse: collapse; background: white; box-shadow: 0px 2px 6px rgba(0,0,0,0.2); }
+        th { background: #1f3b5c; color: white; padding: 10px; }
+        td { padding: 10px; text-align: center; border-bottom: 1px solid #eee; }
+        .btn { padding: 10px 15px; background-color: #2d6cdf; color: white; text-decoration: none; border-radius: 6px; }
+        .btn:hover { background-color: #1b4fa8; }
+        .top-bar { display: flex; justify-content: space-between; margin-bottom: 20px; }
+        .estado-activo { color: green; font-weight: bold; }
+        .estado-inactivo { color: red; font-weight: bold; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="top-bar">
+        <h2>Métodos de Pago</h2>
+        <a href="/admin/metodos/nuevo" class="btn">+ Nuevo Método</a>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="m : ${metodos}">
+                <td th:text="${m.idMetodoPago}"></td>
+                <td th:text="${m.nombre}"></td>
+                <td th:text="${m.descripcion}"></td>
+                <td>
+                    <span th:if="${m.activo}" class="estado-activo">Activo</span>
+                    <span th:unless="${m.activo}" class="estado-inactivo">Inactivo</span>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(metodos)}">
+                <td colspan="4">No hay métodos de pago registrados</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <br/>
+    <a href="/admin/panel">← Volver al panel</a>
+</div>
+</body>
+</html>

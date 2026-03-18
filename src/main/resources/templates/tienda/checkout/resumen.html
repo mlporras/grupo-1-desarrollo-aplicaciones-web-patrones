@@ -23,6 +23,7 @@
                 
                 <form th:action="@{/tienda/checkout/confirmar}" method="POST" class="mt-4">
                     <input type="hidden" name="direccion" th:value="${direccion}" />
+                    <input type="hidden" name="idZona" th:value="${idZona}" />
                     <h5>Seleccione Método de Pago:</h5>
                     <div th:each="m : ${metodosPago}" class="form-check">
                         <input class="form-check-input" type="radio" name="metodoPago" th:value="${m.nombre}" required>

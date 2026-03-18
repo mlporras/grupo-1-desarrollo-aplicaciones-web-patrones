@@ -17,7 +17,7 @@ public class InventarioController {
 
     @GetMapping("/listado")
     public String listado(Model model){
-        model.addAttribute("inventarios", inventarioService.getInventarios());
+        model.addAttribute("inventarios", inventarioService.getTodos());
         return "/admin/inventario/listado";
     }
 

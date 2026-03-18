@@ -71,14 +71,14 @@
 
                 <td th:text="${inv.stock}"></td>
 
-                <td th:text="${inv.stockMinimo}"></td>
+                <td th:text="${inv.umbralMinimo}"></td>
 
                 <!-- ALERTA -->
                 <td>
-                    <span th:if="${inv.stock <= inv.stockMinimo}" class="low-stock">
+                    <span th:if="${inv.stock <= inv.umbralMinimo}" class="low-stock">
                         Bajo
                     </span>
-                    <span th:unless="${inv.stock <= inv.stockMinimo}">
+                    <span th:unless="${inv.stock <= inv.umbralMinimo}">
                         OK
                     </span>
                 </td>
@@ -86,7 +86,7 @@
                 <!-- FORM ACTUALIZAR -->
                 <td>
                     <form th:action="@{/admin/inventario/guardar}" method="post">
-                        <input type="hidden" name="id" th:value="${inv.id}" />
+                        <input type="hidden" name="idInventario" th:value="${inv.idInventario}" />
                         <input type="number" name="stock" th:value="${inv.stock}" />
                         <button type="submit">Guardar</button>
                     </form>

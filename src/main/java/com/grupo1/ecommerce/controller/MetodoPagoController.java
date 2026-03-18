@@ -17,7 +17,7 @@ public class MetodoPagoController {
 
     @GetMapping("/listado")
     public String listado(Model model){
-        model.addAttribute("metodos", metodoPagoService.getMetodos(false));
+        model.addAttribute("metodos", metodoPagoService.getMetodosPago(false));
         return "/admin/metodos/listado";
     }
 

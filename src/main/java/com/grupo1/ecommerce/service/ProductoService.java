@@ -1,5 +1,6 @@
 package com.grupo1.ecommerce.service;
 
+import com.grupo1.ecommerce.domain.Categoria;
 import com.grupo1.ecommerce.domain.Producto;
 import com.grupo1.ecommerce.domain.Inventario;
 import com.grupo1.ecommerce.repository.ProductoRepository;
@@ -30,30 +31,27 @@ public class ProductoService {
         return productoDao.findById(id);
     }
 
-    public void save(Producto producto) {
+    public List<Producto> getProductosPorCategoria(Categoria categoria, boolean soloActivos) {
+        if (soloActivos) {
+            return productoDao.findByCategoriaAndActivoTrue(categoria);
+        }
+        return productoDao.findByCategoria(categoria);
+    }
 
-        // Guardar producto
+    public void save(Producto producto) {
         productoDao.save(producto);
 
-        // Validar que tenga ID
-        if (producto.getId() == null) {
+        if (producto.getIdProducto() == null) {
             return;
         }
 
-        // Buscar inventario existente
-        Inventario inv = inventarioService.getInventarioPorProducto(producto);
-
-        // Si no existe → crear
-        if (inv == null) {
+        Optional<Inventario> invOpt = inventarioService.getInventarioPorProducto(producto);
+        if (invOpt.isEmpty()) {
             Inventario nuevo = new Inventario();
             nuevo.setProducto(producto);
-            nuevo.setStock(producto.getStock());
-            nuevo.setStockMinimo(5);
+            nuevo.setStock(0);
+            nuevo.setUmbralMinimo(5);
             inventarioService.save(nuevo);
-        } else {
-            // Si ya existe → actualizar stock
-            inv.setStock(producto.getStock());
-            inventarioService.save(inv);
         }
     }
 

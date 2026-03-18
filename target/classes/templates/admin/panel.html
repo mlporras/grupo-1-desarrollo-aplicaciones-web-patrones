@@ -20,51 +20,73 @@
         </div>
 
         <div class="row g-4">
+
+            <!-- PRODUCTOS -->
             <div class="col-md-4">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body text-center">
-                        <i class="fas fa-box fa-2x mb-3 text-primary"></i>
-                        <h5>[[#{admin.productos}]]</h5>
-                        <p class="text-muted">[[#{admin.productos.desc}]]</p>
+                <a href="/admin/productos/listado" style="text-decoration:none; color:inherit;">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-box fa-2x mb-3 text-primary"></i>
+                            <h5>[[#{admin.productos}]]</h5>
+                            <p class="text-muted">[[#{admin.productos.desc}]]</p>
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
+
+            <!-- INVENTARIO -->
             <div class="col-md-4">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body text-center">
-                        <i class="fas fa-warehouse fa-2x mb-3 text-primary"></i>
-                        <h5>[[#{admin.inventario}]]</h5>
-                        <p class="text-muted">[[#{admin.inventario.desc}]]</p>
+                <a href="/admin/inventario/listado" style="text-decoration:none; color:inherit;">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-warehouse fa-2x mb-3 text-primary"></i>
+                            <h5>[[#{admin.inventario}]]</h5>
+                            <p class="text-muted">[[#{admin.inventario.desc}]]</p>
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
+
+            <!-- PEDIDOS -->
             <div class="col-md-4">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body text-center">
-                        <i class="fas fa-shopping-bag fa-2x mb-3 text-primary"></i>
-                        <h5>[[#{admin.pedidos}]]</h5>
-                        <p class="text-muted">[[#{admin.pedidos.desc}]]</p>
+                <a href="/admin/pedidos/listado" style="text-decoration:none; color:inherit;">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-shopping-bag fa-2x mb-3 text-primary"></i>
+                            <h5>[[#{admin.pedidos}]]</h5>
+                            <p class="text-muted">[[#{admin.pedidos.desc}]]</p>
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
+
+            <!-- METODOS DE PAGO -->
             <div class="col-md-4">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body text-center">
-                        <i class="fas fa-credit-card fa-2x mb-3 text-primary"></i>
-                        <h5>[[#{admin.pagos}]]</h5>
-                        <p class="text-muted">[[#{admin.pagos.desc}]]</p>
+                <a href="/admin/metodos/listado" style="text-decoration:none; color:inherit;">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-credit-card fa-2x mb-3 text-primary"></i>
+                            <h5>[[#{admin.pagos}]]</h5>
+                            <p class="text-muted">[[#{admin.pagos.desc}]]</p>
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
+
+            <!-- ENVIOS -->
             <div class="col-md-4">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body text-center">
-                        <i class="fas fa-truck fa-2x mb-3 text-primary"></i>
-                        <h5>[[#{admin.envios}]]</h5>
-                        <p class="text-muted">[[#{admin.envios.desc}]]</p>
+                <a href="/admin/envios/listado" style="text-decoration:none; color:inherit;">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-truck fa-2x mb-3 text-primary"></i>
+                            <h5>[[#{admin.envios}]]</h5>
+                            <p class="text-muted">[[#{admin.envios.desc}]]</p>
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
+
+            <!-- CONFIG -->
             <div class="col-md-4">
                 <div class="card shadow-sm h-100">
                     <div class="card-body text-center">
@@ -74,6 +96,7 @@
                     </div>
                 </div>
             </div>
+
         </div>
     </main>
 

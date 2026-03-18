@@ -25,7 +25,7 @@ public class PedidoController {
     // =========================
     @GetMapping("/listado")
     public String listado(Model model){
-        model.addAttribute("pedidos", pedidoService.getPedidos());
+        model.addAttribute("pedidos", pedidoService.getTodosPedidos());
         return "/admin/pedidos/listado";
     }
 
@@ -35,7 +35,7 @@ public class PedidoController {
     @GetMapping("/nuevo")
     public String nuevo(Model model){
         model.addAttribute("pedido", new Pedido());
-        model.addAttribute("metodos", metodoPagoService.getMetodos(true));
+        model.addAttribute("metodos", metodoPagoService.getMetodosPago(true));
         model.addAttribute("zonas", zonaEnvioService.getZonas());
         return "/admin/pedidos/modifica";
     }

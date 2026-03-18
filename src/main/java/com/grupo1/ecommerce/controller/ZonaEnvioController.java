@@ -1,6 +1,6 @@
 package com.grupo1.ecommerce.controller;
 
-import com.grupo1.ecommerce.domain.Envio;
+import com.grupo1.ecommerce.domain.ZonaEnvio;
 import com.grupo1.ecommerce.service.ZonaEnvioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,20 +15,20 @@ public class ZonaEnvioController {
     private ZonaEnvioService envioService;
 
     @GetMapping("/listado")
-    public String listado(Model model){
-        model.addAttribute("envios", envioService.getEnvios());
+    public String listado(Model model) {
+        model.addAttribute("zonas", envioService.getZonas());
         return "/admin/envios/listado";
     }
 
     @GetMapping("/nuevo")
-    public String nuevo(Model model){
-        model.addAttribute("envio", new Envio());
+    public String nuevo(Model model) {
+        model.addAttribute("zona", new ZonaEnvio());
         return "/admin/envios/modifica";
     }
 
     @PostMapping("/guardar")
-    public String guardar(Envio envio){
-        envioService.save(envio);
+    public String guardar(ZonaEnvio zona) {
+        envioService.save(zona);
         return "redirect:/admin/envios/listado";
     }
 }

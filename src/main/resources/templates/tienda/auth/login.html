@@ -21,19 +21,19 @@
 
                         <form th:action="@{/auth/login}" method="POST">
                             <div class="mb-3">
-                                <label for="username" class="form-label fw-bold">[[#{usuario.nombre}]]</label>
+                                <label for="correo" class="form-label fw-bold">[[#{usuario.nombre}]]</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-                                    <input type="text" id="username" name="username" class="form-control" 
+                                    <input type="text" id="correo" name="correo" class="form-control" 
                                            placeholder="nombre@ejemplo.com" required autofocus>
                                 </div>
                             </div>
                             
                             <div class="mb-4">
-                                <label for="password" class="form-label fw-bold">[[#{usuario.password}]]</label>
+                                <label for="contrasena" class="form-label fw-bold">[[#{usuario.password}]]</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                                    <input type="password" id="password" name="password" class="form-control" 
+                                    <input type="password" id="contrasena" name="contrasena" class="form-control" 
                                            placeholder="••••••••" required>
                                 </div>
                             </div>

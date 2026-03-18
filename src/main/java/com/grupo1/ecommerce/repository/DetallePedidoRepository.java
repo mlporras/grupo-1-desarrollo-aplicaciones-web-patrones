@@ -4,10 +4,10 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.grupo1.ecommerce.domain.DetallePedido;
+import com.grupo1.ecommerce.domain.PedidoDetalle;
 import com.grupo1.ecommerce.domain.Pedido;
 
-public interface DetallePedidoRepository extends JpaRepository<DetallePedido, Integer> {
+public interface DetallePedidoRepository extends JpaRepository<PedidoDetalle, Integer> {
 
-    List<DetallePedido> findByPedido(Pedido pedido);
+    List<PedidoDetalle> findByPedido(Pedido pedido);
 }

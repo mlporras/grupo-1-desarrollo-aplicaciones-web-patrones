@@ -13,7 +13,7 @@
                         <h4 class="mb-0"><i class="fas fa-user-plus me-2"></i>[[#{auth.crearCuenta}]]</h4>
                     </div>
                     <div class="card-body p-4">
-                        <form th:action="@{/auth/registro}" method="post">
+                        <form th:action="@{/tienda/auth/registro}" method="post">
                             <div class="mb-3">
                                 <label for="nombre" class="form-label">[[#{auth.nombre}]]</label>
                                 <input type="text" class="form-control" id="nombre" name="nombre"
@@ -29,11 +29,6 @@
                                 <input type="password" class="form-control" id="contrasena" name="contrasena"
                                        minlength="8" th:placeholder="#{auth.contrasena.placeholder}" required/>
                                 <div class="form-text">[[#{auth.contrasena.ayuda}]]</div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="nombreTienda" class="form-label">[[#{auth.nombreTienda}]]</label>
-                                <input type="text" class="form-control" id="nombreTienda" name="nombreTienda"
-                                       th:placeholder="#{auth.nombreTienda.placeholder}" required/>
                             </div>
                             <div class="d-grid">
                                 <button type="submit" class="btn btn-primary">

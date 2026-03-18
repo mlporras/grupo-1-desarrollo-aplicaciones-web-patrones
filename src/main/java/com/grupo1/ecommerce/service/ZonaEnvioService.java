@@ -1,23 +1,34 @@
 package com.grupo1.ecommerce.service;
 
-import com.grupo1.ecommerce.domain.Envio;
+import com.grupo1.ecommerce.domain.ZonaEnvio;
 import com.grupo1.ecommerce.repository.ZonaEnvioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ZonaEnvioService {
+
     @Autowired
-    private ZonaEnvioRepository envioDao;
-    public List<Envio> getEnvios(){
-        return envioDao.findAll();
-    }
-    public void save(Envio envio){
-        envioDao.save(envio);
+    private ZonaEnvioRepository zonaEnvioDao;
+
+    public List<ZonaEnvio> getZonas() {
+        return zonaEnvioDao.findAll();
     }
 
-    public Object getZonas() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public List<ZonaEnvio> getZonasEnvio(boolean soloActivas) {
+        if (soloActivas) {
+            return zonaEnvioDao.findByActivoTrue();
+        }
+        return zonaEnvioDao.findAll();
+    }
+
+    public Optional<ZonaEnvio> getZonaEnvio(Integer id) {
+        return zonaEnvioDao.findById(id);
+    }
+
+    public void save(ZonaEnvio zonaEnvio) {
+        zonaEnvioDao.save(zonaEnvio);
     }
 }

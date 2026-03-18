@@ -121,10 +121,10 @@
 
             <tbody>
                 <tr th:each="p : ${productos}">
-                    <td th:text="${p.id}"></td>
+                    <td th:text="${p.idProducto}"></td>
                     <td th:text="${p.nombre}"></td>
                     <td th:text="${p.precio}"></td>
-                    <td th:text="${p.stock}"></td>
+                    <td>-</td>
                     <td th:text="${p.categoria != null ? p.categoria.nombre : 'Sin categoría'}"></td>
 
                     <!-- Estado -->
@@ -135,16 +135,16 @@
 
                     <!-- Acciones -->
                     <td class="acciones">
-                        <a th:href="@{'/admin/productos/editar/' + ${p.id}}">Editar</a>
+                        <a th:href="@{'/admin/productos/editar/' + ${p.idProducto}}">Editar</a>
                         |
 
-                        <a th:href="@{'/admin/productos/eliminar/' + ${p.id}}"
+                        <a th:href="@{'/admin/productos/eliminar/' + ${p.idProducto}}"
                            onclick="return confirm('¿Seguro que deseas eliminar este producto?')">
                            Eliminar
                         </a>
                         |
 
-                        <a th:href="@{'/admin/productos/activar/' + ${p.id}}">
+                        <a th:href="@{'/admin/productos/activar/' + ${p.idProducto}}">
                             <span th:text="${p.activo ? 'Desactivar' : 'Activar'}"></span>
                         </a>
                     </td>

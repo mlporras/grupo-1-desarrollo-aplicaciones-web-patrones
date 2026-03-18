@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Zonas de Envío</title>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial; background-color: #f4f6f9; }
+        .container { width: 90%; margin: 30px auto; }
+        table { width: 100%; border-collapse: collapse; background: white; box-shadow: 0px 2px 6px rgba(0,0,0,0.2); }
+        th { background: #1f3b5c; color: white; padding: 10px; }
+        td { padding: 10px; text-align: center; border-bottom: 1px solid #eee; }
+        .btn { padding: 10px 15px; background-color: #2d6cdf; color: white; text-decoration: none; border-radius: 6px; }
+        .btn:hover { background-color: #1b4fa8; }
+        .top-bar { display: flex; justify-content: space-between; margin-bottom: 20px; }
+        .estado-activo { color: green; font-weight: bold; }
+        .estado-inactivo { color: red; font-weight: bold; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="top-bar">
+        <h2>Zonas de Envío</h2>
+        <a href="/admin/envios/nuevo" class="btn">+ Nueva Zona</a>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Costo</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="z : ${zonas}">
+                <td th:text="${z.idZonaEnvio}"></td>
+                <td th:text="${z.nombre}"></td>
+                <td th:text="${z.descripcion}"></td>
+                <td th:text="${z.costoEnvio}"></td>
+                <td>
+                    <span th:if="${z.activo}" class="estado-activo">Activo</span>
+                    <span th:unless="${z.activo}" class="estado-inactivo">Inactivo</span>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(zonas)}">
+                <td colspan="5">No hay zonas de envío registradas</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <br/>
+    <a href="/admin/panel">← Volver al panel</a>
+</div>
+</body>
+</html>

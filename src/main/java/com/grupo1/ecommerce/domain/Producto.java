@@ -57,11 +57,4 @@ public class Producto implements Serializable {
     @Column(name = "fecha_creacion")
     private LocalDateTime fechaCreacion;
 
-    public Object getId() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    public Integer getStock() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
 }
