@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Detalle del Pedido</title>
+    <meta charset="UTF-8"/>
+</head>
+<body>
+<h2>Detalle del Pedido <span th:text="${pedido.numeroPedido}"></span></h2>
+
+<h3>Información General</h3>
+<p><strong>Estado:</strong> <span th:text="${pedido.estado}"></span></p>
+<p><strong>Fecha:</strong> <span th:text="${#temporals.format(pedido.fechaPedido, 'dd/MM/yyyy HH:mm')}"></span></p>
+<p><strong>Dirección de Envío:</strong> <span th:text="${pedido.direccionEnvio}"></span></p>
+<p><strong>Método de Pago:</strong> <span th:text="${pedido.metodoPago != null ? pedido.metodoPago.nombre : 'N/A'}"></span></p>
+<p><strong>Zona de Envío:</strong> <span th:text="${pedido.zonaEnvio != null ? pedido.zonaEnvio.nombre : 'N/A'}"></span></p>
+
+<h3>Productos</h3>
+<table border="1">
+    <thead>
+        <tr>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Precio Unitario</th>
+            <th>Subtotal</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="d : ${pedido.detalles}">
+            <td th:text="${d.producto.nombre}"></td>
+            <td th:text="${d.cantidad}"></td>
+            <td th:text="${d.precio}"></td>
+            <td th:text="${d.subtotal}"></td>
+        </tr>
+    </tbody>
+</table>
+
+<h3>Totales</h3>
+<p><strong>Subtotal:</strong> <span th:text="${pedido.subtotal}"></span></p>
+<p><strong>Costo de Envío:</strong> <span th:text="${pedido.costoEnvio}"></span></p>
+<p><strong>Total:</strong> <span th:text="${pedido.total}"></span></p>
+
+<br/>
+<a href="/admin/pedidos/listado">← Volver al listado</a>
+</body>
+</html>
