@@ -1,1 +1,14 @@
 /target/
+
+# IDE / Editor
+.cursor/
+.vscode/
+.idea/
+.settings/
+nbproject/
+*.iml
+.classpath
+.project
+
+# OS
+.DS_Store
