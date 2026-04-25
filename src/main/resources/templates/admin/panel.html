@@ -86,15 +86,69 @@
                 </a>
             </div>
 
-            <!-- CONFIG -->
-            <div class="col-md-4">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body text-center">
-                        <i class="fas fa-cog fa-2x mb-3 text-primary"></i>
-                        <h5>[[#{admin.configuracion}]]</h5>
-                        <p class="text-muted">[[#{admin.configuracion.desc}]]</p>
+            <!-- CONFIG (solo ADMIN) -->
+            <div class="col-md-4" th:if="${session.rolUsuario == 'ADMIN'}">
+                <a href="/admin/configuracion" style="text-decoration:none; color:inherit;">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-cog fa-2x mb-3 text-primary"></i>
+                            <h5>[[#{admin.configuracion}]]</h5>
+                            <p class="text-muted">[[#{admin.configuracion.desc}]]</p>
+                        </div>
                     </div>
-                </div>
+                </a>
+            </div>
+
+            <!-- DISENO (solo ADMIN) -->
+            <div class="col-md-4" th:if="${session.rolUsuario == 'ADMIN'}">
+                <a href="/admin/diseno" style="text-decoration:none; color:inherit;">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-palette fa-2x mb-3 text-primary"></i>
+                            <h5>[[#{admin.diseno}]]</h5>
+                            <p class="text-muted">[[#{admin.diseno.desc}]]</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- CUPONES (HU13) -->
+            <div class="col-md-4">
+                <a href="/admin/cupones/listado" style="text-decoration:none; color:inherit;">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-tags fa-2x mb-3 text-primary"></i>
+                            <h5>[[#{admin.cupones}]]</h5>
+                            <p class="text-muted">[[#{admin.cupones.desc}]]</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- COLABORADORES (HU14) -->
+            <div class="col-md-4" th:if="${session.rolUsuario == 'ADMIN'}">
+                <a href="/admin/colaboradores/listado" style="text-decoration:none; color:inherit;">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-users fa-2x mb-3 text-primary"></i>
+                            <h5>[[#{admin.colaboradores}]]</h5>
+                            <p class="text-muted">[[#{admin.colaboradores.desc}]]</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- PLANES (solo ADMIN) -->
+            <div class="col-md-4" th:if="${session.rolUsuario == 'ADMIN'}">
+                <a href="/admin/planes/listado" style="text-decoration:none; color:inherit;">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-crown fa-2x mb-3 text-primary"></i>
+                            <h5>[[#{admin.planes}]]</h5>
+                            <p class="text-muted">[[#{admin.planes.desc}]]</p>
+                        </div>
+                    </div>
+                </a>
             </div>
 
         </div>

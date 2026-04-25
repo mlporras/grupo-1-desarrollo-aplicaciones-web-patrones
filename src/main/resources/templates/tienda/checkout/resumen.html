@@ -7,8 +7,12 @@
         <div class="card shadow">
             <div class="card-header bg-dark text-white"><h3>[[#{checkout.resumen}]]</h3></div>
             <div class="card-body">
-                <h5>Entregar en: <span class="fw-normal" th:text="${direccion}"></span></h5>
+                <h5>[[#{checkout.direccion}]]: <span class="fw-normal" th:text="${direccion}"></span></h5>
+                <p th:if="${zona != null}" class="text-muted mb-1">
+                    <i class="fas fa-truck me-1"></i>[[#{checkout.zona}]]: [[${zona.nombre}]]
+                </p>
                 <hr>
+
                 <table class="table">
                     <thead><tr><th>Producto</th><th>Cant.</th><th>Subtotal</th></tr></thead>
                     <tbody>
@@ -19,17 +23,70 @@
                         </tr>
                     </tbody>
                 </table>
-                <h4 class="text-end">Total: <span class="text-success" th:text="${'₡' + total}"></span></h4>
-                
+
+                <!-- Desglose -->
+                <div class="border-top pt-3">
+                    <div class="d-flex justify-content-between">
+                        <span>[[#{checkout.subtotal}]]</span>
+                        <span th:text="${'₡' + subtotal}"></span>
+                    </div>
+                    <div class="d-flex justify-content-between text-muted">
+                        <span>[[#{checkout.costoEnvio}]]</span>
+                        <span th:text="${'₡' + costoEnvio}"></span>
+                    </div>
+                    <div th:if="${descuento != null and descuento.doubleValue() > 0}"
+                         class="d-flex justify-content-between text-success">
+                        <span>[[#{checkout.descuento}]]</span>
+                        <span>-₡[[${descuento}]]</span>
+                    </div>
+                    <hr class="my-2">
+                    <div class="d-flex justify-content-between fw-bold fs-5">
+                        <span>[[#{checkout.totalFinal}]]</span>
+                        <span class="text-success" th:text="${'₡' + totalFinal}"></span>
+                    </div>
+                </div>
+
+                <!-- Cupon -->
+                <div class="card bg-light p-3 my-3">
+                    <label class="form-label fw-bold"><i class="fas fa-tags me-1"></i>[[#{cupon.aplicar}]]</label>
+                    <form th:action="@{/tienda/checkout/resumen}" method="POST">
+                        <input type="hidden" name="direccion" th:value="${direccion}" />
+                        <input type="hidden" name="idZona" th:value="${idZona}" />
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="codigoCupon"
+                                   th:value="${codigoCupon}" placeholder="Código de cupón"/>
+                            <button type="submit" class="btn btn-outline-primary">
+                                <i class="fas fa-check me-1"></i>[[#{checkout.cupon.aplicar}]]
+                            </button>
+                        </div>
+                    </form>
+                    <small th:if="${cupon}" class="text-success mt-1">
+                        <i class="fas fa-check-circle"></i> Cupón aplicado: [[${cupon.codigo}]]
+                    </small>
+                    <small th:if="${cuponError}" class="text-danger mt-1">
+                        <i class="fas fa-times-circle"></i> [[${cuponError}]]
+                    </small>
+                </div>
+
+                <!-- Demo banner -->
+                <div class="alert alert-info mb-3">
+                    <i class="fas fa-info-circle me-1"></i>[[#{checkout.demo.banner}]]
+                </div>
+
+                <!-- Form confirmar -->
                 <form th:action="@{/tienda/checkout/confirmar}" method="POST" class="mt-4">
                     <input type="hidden" name="direccion" th:value="${direccion}" />
                     <input type="hidden" name="idZona" th:value="${idZona}" />
-                    <h5>Seleccione Método de Pago:</h5>
+                    <input type="hidden" name="codigoCupon" th:value="${codigoCupon}" />
+                    <h5>[[#{checkout.seleccionePago}]]:</h5>
                     <div th:each="m : ${metodosPago}" class="form-check">
-                        <input class="form-check-input" type="radio" name="metodoPago" th:value="${m.nombre}" required>
-                        <label class="form-check-label" th:text="${m.nombre}"></label>
+                        <input class="form-check-input" type="radio" name="metodoPago"
+                               th:value="${m.nombre}" th:id="${'mp_' + m.idMetodoPago}" required>
+                        <label class="form-check-label" th:for="${'mp_' + m.idMetodoPago}" th:text="${m.nombre}"></label>
                     </div>
-                    <button type="submit" class="btn btn-success btn-lg w-100 mt-3">CONFIRMAR COMPRA</button>
+                    <button type="submit" class="btn btn-success btn-lg w-100 mt-3">
+                        <i class="fas fa-lock me-1"></i>[[#{checkout.confirmar}]]
+                    </button>
                 </form>
             </div>
         </div>

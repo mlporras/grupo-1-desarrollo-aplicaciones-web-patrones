@@ -14,6 +14,9 @@ import com.grupo1.ecommerce.domain.Usuario;
 import com.grupo1.ecommerce.repository.DetallePedidoRepository;
 import com.grupo1.ecommerce.repository.PedidoRepository;
 
+import com.grupo1.ecommerce.domain.Cupon;
+import com.grupo1.ecommerce.domain.ZonaEnvio;
+
 import java.math.BigDecimal;
 
 @Service
@@ -24,21 +27,35 @@ public class PedidoService {
     private final CarritoService carritoService;
     private final InventarioService inventarioService;
     private final MetodoPagoService metodoPagoService;
+    private final CuponService cuponService;
 
     public PedidoService(PedidoRepository pedidoRepository,
                          DetallePedidoRepository detallePedidoRepository,
                          CarritoService carritoService,
                          InventarioService inventarioService,
-                         MetodoPagoService metodoPagoService) {
+                         MetodoPagoService metodoPagoService,
+                         CuponService cuponService) {
         this.pedidoRepository = pedidoRepository;
         this.detallePedidoRepository = detallePedidoRepository;
         this.carritoService = carritoService;
         this.inventarioService = inventarioService;
         this.metodoPagoService = metodoPagoService;
+        this.cuponService = cuponService;
     }
 
     @Transactional
     public Pedido procesarCompra(Usuario usuario, String direccion, String metodoPago) {
+        return procesarCompra(usuario, direccion, metodoPago, null);
+    }
+
+    @Transactional
+    public Pedido procesarCompra(Usuario usuario, String direccion, String metodoPago, Cupon cupon) {
+        return procesarCompra(usuario, direccion, metodoPago, cupon, null);
+    }
+
+    @Transactional
+    public Pedido procesarCompra(Usuario usuario, String direccion, String metodoPago,
+                                 Cupon cupon, ZonaEnvio zonaEnvio) {
         List<CarritoItem> items = carritoService.getItemsPorUsuario(usuario);
         if (items.isEmpty()) {
             throw new IllegalStateException("El carrito está vacío.");
@@ -55,10 +72,16 @@ public class PedidoService {
         metodoPagoService.getMetodoPorNombre(metodoPago)
                          .ifPresent(pedido::setMetodoPago);
 
-        pedido.setEstado("PAGADO");
-        pedido.setCostoEnvio(BigDecimal.ZERO);
+        // Debe coincidir con el ENUM de BD: PENDIENTE/CONFIRMADO/ENVIADO/ENTREGADO/CANCELADO
+        pedido.setEstado("CONFIRMADO");
 
-        // First save to get the ID for detail references
+        if (zonaEnvio != null) {
+            pedido.setZonaEnvio(zonaEnvio);
+            pedido.setCostoEnvio(zonaEnvio.getCostoEnvio());
+        } else {
+            pedido.setCostoEnvio(BigDecimal.ZERO);
+        }
+
         pedido.setSubtotal(BigDecimal.ZERO);
         pedido.setTotal(BigDecimal.ZERO);
         Pedido pedidoGuardado = pedidoRepository.save(pedido);
@@ -81,7 +104,16 @@ public class PedidoService {
         }
 
         pedidoGuardado.setSubtotal(subtotal);
-        pedidoGuardado.setTotal(subtotal.add(pedidoGuardado.getCostoEnvio()));
+
+        BigDecimal descuento = BigDecimal.ZERO;
+        if (cupon != null) {
+            descuento = cuponService.calcularDescuento(cupon, subtotal);
+            pedidoGuardado.setCupon(cupon);
+            pedidoGuardado.setDescuento(descuento);
+            cuponService.incrementarUso(cupon);
+        }
+
+        pedidoGuardado.setTotal(subtotal.add(pedidoGuardado.getCostoEnvio()).subtract(descuento));
         pedidoRepository.save(pedidoGuardado);
 
         carritoService.vaciarCarrito(usuario);

@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "pedido_detalle")
+@Table(name = "detalle_pedido")
 public class PedidoDetalle implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -27,6 +27,7 @@ public class PedidoDetalle implements Serializable {
 
     private Integer cantidad;
 
+    @Column(name = "precio_unitario")
     private BigDecimal precio;
 
     private BigDecimal subtotal;

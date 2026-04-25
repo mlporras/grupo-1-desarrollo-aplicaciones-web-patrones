@@ -7,9 +7,10 @@
 
 <body>
 
+<th:block th:with="puedeEscribir=${session.rolUsuario == 'ADMIN' or (session.rolUsuario == 'COLABORADOR' and session.rolColaborador == 'EDITOR')}">
 <h2>Lista de Pedidos</h2>
 
-<a href="/admin/pedidos/nuevo">+ Nuevo Pedido</a>
+<a href="/admin/pedidos/nuevo" th:if="${puedeEscribir}">+ Nuevo Pedido</a>
 
 <table border="1">
     <thead>
@@ -41,5 +42,6 @@
     </tbody>
 </table>
 
+</th:block>
 </body>
 </html>

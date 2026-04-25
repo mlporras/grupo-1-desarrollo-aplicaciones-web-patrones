@@ -97,12 +97,13 @@
         <h1>Administración de Productos</h1>
     </div>
 
+    <th:block th:with="puedeEscribir=${session.rolUsuario == 'ADMIN' or (session.rolUsuario == 'COLABORADOR' and session.rolColaborador == 'EDITOR')}">
     <div class="container">
 
         <!-- Botón crear -->
         <div class="top-bar">
             <h2>Lista de Productos</h2>
-            <a href="/admin/productos/nuevo" class="btn">+ Nuevo Producto</a>
+            <a href="/admin/productos/nuevo" class="btn" th:if="${puedeEscribir}">+ Nuevo Producto</a>
         </div>
 
         <!-- Tabla -->
@@ -115,7 +116,7 @@
                     <th>Stock</th>
                     <th>Categoría</th>
                     <th>Estado</th>
-                    <th>Acciones</th>
+                    <th th:if="${puedeEscribir}">Acciones</th>
                 </tr>
             </thead>
 
@@ -134,7 +135,7 @@
                     </td>
 
                     <!-- Acciones -->
-                    <td class="acciones">
+                    <td class="acciones" th:if="${puedeEscribir}">
                         <a th:href="@{'/admin/productos/editar/' + ${p.idProducto}}">Editar</a>
                         |
 
@@ -158,6 +159,7 @@
         </table>
 
     </div>
+    </th:block>
 
 </body>
 </html>

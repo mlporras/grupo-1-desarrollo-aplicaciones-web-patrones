@@ -7,6 +7,13 @@
         <link th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" rel="stylesheet"/>
         <link th:href="@{/webjars/font-awesome/css/all.css}" rel="stylesheet"/>
         <link th:href="@{/css/estilos.css}" rel="stylesheet"/>
+        <style th:if="${disenoPublicado != null}" th:inline="text">
+            :root {
+                --color-primario: [[${disenoPublicado.colorPrimario}]];
+                --color-secundario: [[${disenoPublicado.colorSecundario}]];
+                --color-acento: [[${disenoPublicado.colorAcento}]];
+            }
+        </style>
         <script th:src="@{/js/rutinas.js}"></script>
         <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
         <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
@@ -18,7 +25,11 @@
             <nav class="navbar navbar-expand-sm navbar-dark bg-dark sticky-top shadow">
                 <div class="container">
                     <a th:href="@{/}" class="navbar-brand">
-                        <i class="fas fa-store me-2"></i>[[#{aplicacion.titulo}]]</a>
+                        <img th:if="${disenoPublicado != null and disenoPublicado.rutaLogo != null}"
+                             th:src="@{${disenoPublicado.rutaLogo}}" alt="Logo"
+                             style="max-height:30px;" class="me-2"/>
+                        <i th:unless="${disenoPublicado != null and disenoPublicado.rutaLogo != null}"
+                           class="fas fa-store me-2"></i>[[#{aplicacion.titulo}]]</a>
                     <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                         <span class="navbar-toggler-icon"></span>
                     </button>
@@ -28,7 +39,16 @@
                         </ul>
                         <ul class="navbar-nav">
                             <th:block th:if="${session.usuarioLogueado != null}">
-                                <li class="nav-item" th:if="${session.usuarioLogueado.rol == 'ADMIN'}">
+                                <li class="nav-item" th:if="${session.usuarioLogueado.rol == 'CLIENTE'}">
+                                    <a class="nav-link" th:href="@{/tienda/carrito}">
+                                        <i class="fas fa-shopping-cart me-1"></i>Carrito
+                                        <span class="badge bg-primary ms-1"
+                                              th:if="${session.itemsCarritoCount != null}"
+                                              th:text="${session.itemsCarritoCount}"></span>
+                                    </a>
+                                </li>
+                                <li class="nav-item"
+                                    th:if="${session.usuarioLogueado.rol == 'ADMIN' or session.usuarioLogueado.rol == 'COLABORADOR'}">
                                     <a class="nav-link" th:href="@{/admin/panel}">
                                         <i class="fas fa-cogs me-1"></i>[[#{plantilla.panel}]]</a>
                                 </li>
@@ -61,6 +81,12 @@
             <div class="hero-banner">
                 <div class="container">
                     <h1><i class="fas fa-store me-2"></i>[[#{plantilla.subtitulo}]]</h1>
+                    <div class="mt-3"
+                         th:if="${session.usuarioLogueado != null and (session.usuarioLogueado.rol == 'ADMIN' or session.usuarioLogueado.rol == 'COLABORADOR')}">
+                        <a class="btn btn-outline-light btn-sm" th:href="@{/admin/panel}">
+                            <i class="fas fa-cogs me-1"></i>[[#{plantilla.panel}]]
+                        </a>
+                    </div>
                 </div>
             </div>
         </header>

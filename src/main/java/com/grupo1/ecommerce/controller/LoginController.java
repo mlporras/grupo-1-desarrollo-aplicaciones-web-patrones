@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.grupo1.ecommerce.domain.Colaborador;
 import com.grupo1.ecommerce.domain.Tienda;
 import com.grupo1.ecommerce.domain.Usuario;
+import com.grupo1.ecommerce.service.ColaboradorService;
 import com.grupo1.ecommerce.service.UsuarioService;
 
 import jakarta.servlet.http.HttpSession;
@@ -23,10 +25,14 @@ import jakarta.servlet.http.HttpSession;
 public class LoginController {
 
     private final UsuarioService usuarioService;
+    private final ColaboradorService colaboradorService;
     private final MessageSource messageSource;
 
-    public LoginController(UsuarioService usuarioService, MessageSource messageSource) {
+    public LoginController(UsuarioService usuarioService,
+                           ColaboradorService colaboradorService,
+                           MessageSource messageSource) {
         this.usuarioService = usuarioService;
+        this.colaboradorService = colaboradorService;
         this.messageSource = messageSource;
     }
 
@@ -68,10 +74,16 @@ public class LoginController {
         session.setAttribute("nombreUsuario", usuario.getNombre());
         session.setAttribute("rolUsuario", usuario.getRol());
 
-        // Lógica de redirección por ROL (HU8)
         if ("ADMIN".equals(usuario.getRol())) {
             Optional<Tienda> tiendaOpt = usuarioService.getTiendaPorUsuario(usuario);
             tiendaOpt.ifPresent(t -> session.setAttribute("tienda", t));
+            return "redirect:/admin/panel";
+        } else if ("COLABORADOR".equals(usuario.getRol())) {
+            Optional<Colaborador> colabOpt = colaboradorService.getColaboradorActivoPorUsuario(usuario);
+            if (colabOpt.isPresent()) {
+                session.setAttribute("tienda", colabOpt.get().getTienda());
+                session.setAttribute("rolColaborador", colabOpt.get().getRolColaborador());
+            }
             return "redirect:/admin/panel";
         } else if ("CLIENTE".equals(usuario.getRol())) {
             return "redirect:/tienda/catalogo";

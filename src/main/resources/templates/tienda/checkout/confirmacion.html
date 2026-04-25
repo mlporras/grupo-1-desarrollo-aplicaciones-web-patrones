@@ -3,13 +3,102 @@
 <head th:replace="~{general/fragmentos :: head}"></head>
 <body>
     <header th:replace="~{general/fragmentos :: header}"></header>
-    <main class="container py-5 text-center">
-        <div class="py-5">
-            <i class="fas fa-check-circle text-success fa-5x mb-4"></i>
-            <h2 class="display-4">[[#{checkout.exito}]]</h2>
-            <p class="lead">[[#{checkout.pedido.num}]] <strong th:text="${pedido.numeroPedido}"></strong></p>
-            <p>Hemos recibido tu orden y la estamos procesando.</p>
-            <a th:href="@{/tienda/catalogo}" class="btn btn-primary mt-4">Volver a la Tienda</a>
+    <main class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+
+                <div class="text-center mb-4">
+                    <i class="fas fa-check-circle text-success fa-5x mb-3"></i>
+                    <h2 class="display-5">[[#{checkout.exito}]]</h2>
+                    <p class="lead">[[#{checkout.pedido.num}]] <strong th:text="${pedido.numeroPedido}"></strong></p>
+                </div>
+
+                <div class="card shadow">
+                    <div class="card-header bg-dark text-white">
+                        <h4 class="mb-0"><i class="fas fa-receipt me-2"></i>[[#{checkout.comprobante}]]</h4>
+                    </div>
+                    <div class="card-body">
+
+                        <div class="row mb-3">
+                            <div class="col-sm-6">
+                                <strong>[[#{checkout.direccion}]]:</strong>
+                                <p th:text="${pedido.direccionEnvio}"></p>
+                            </div>
+                            <div class="col-sm-6">
+                                <strong>[[#{checkout.fecha}]]:</strong>
+                                <p th:text="${#temporals.format(pedido.fechaPedido, 'dd/MM/yyyy HH:mm')}"></p>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-sm-6" th:if="${pedido.zonaEnvio != null}">
+                                <strong>[[#{checkout.zona}]]:</strong>
+                                <p th:text="${pedido.zonaEnvio.nombre}"></p>
+                            </div>
+                            <div class="col-sm-6" th:if="${pedido.metodoPago != null}">
+                                <strong>[[#{checkout.metodo}]]:</strong>
+                                <p th:text="${pedido.metodoPago.nombre}"></p>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <table class="table table-sm">
+                            <thead><tr><th>Producto</th><th>Cant.</th><th class="text-end">Subtotal</th></tr></thead>
+                            <tbody>
+                                <tr th:each="d : ${pedido.detalles}">
+                                    <td th:text="${d.producto.nombre}"></td>
+                                    <td th:text="${d.cantidad}"></td>
+                                    <td class="text-end" th:text="${'₡' + d.subtotal}"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="border-top pt-3">
+                            <div class="d-flex justify-content-between">
+                                <span>[[#{checkout.subtotal}]]</span>
+                                <span th:text="${'₡' + pedido.subtotal}"></span>
+                            </div>
+                            <div class="d-flex justify-content-between text-muted" th:if="${pedido.costoEnvio != null and pedido.costoEnvio.doubleValue() > 0}">
+                                <span>[[#{checkout.costoEnvio}]]</span>
+                                <span th:text="${'₡' + pedido.costoEnvio}"></span>
+                            </div>
+                            <div class="d-flex justify-content-between text-success" th:if="${pedido.descuento != null and pedido.descuento.doubleValue() > 0}">
+                                <span>[[#{checkout.descuento}]]</span>
+                                <span>-₡[[${pedido.descuento}]]</span>
+                            </div>
+                            <div th:if="${pedido.cupon != null}" class="d-flex justify-content-between text-info">
+                                <small>[[#{checkout.cupon.usado}]]: [[${pedido.cupon.codigo}]]</small>
+                            </div>
+                            <hr class="my-2">
+                            <div class="d-flex justify-content-between fw-bold fs-5">
+                                <span>[[#{checkout.totalFinal}]]</span>
+                                <span class="text-success" th:text="${'₡' + pedido.total}"></span>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <!-- Demo banner / pago contra entrega -->
+                        <div th:if="${pedido.metodoPago != null and #strings.containsIgnoreCase(pedido.metodoPago.nombre, 'contra entrega')}"
+                             class="alert alert-warning mb-0">
+                            <i class="fas fa-hand-holding-usd me-1"></i>[[#{checkout.demo.contraEntrega}]]
+                        </div>
+                        <div th:unless="${pedido.metodoPago != null and #strings.containsIgnoreCase(pedido.metodoPago.nombre, 'contra entrega')}"
+                             class="alert alert-info mb-0">
+                            <i class="fas fa-info-circle me-1"></i>[[#{checkout.demo.banner}]]
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <p class="text-muted">[[#{checkout.procesando}]]</p>
+                    <a th:href="@{/tienda/catalogo}" class="btn btn-primary">
+                        <i class="fas fa-store me-1"></i>[[#{checkout.volver}]]
+                    </a>
+                </div>
+
+            </div>
         </div>
     </main>
 </body>

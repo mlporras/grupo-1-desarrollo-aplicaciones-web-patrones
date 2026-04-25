@@ -50,6 +50,7 @@
 
 <body>
 
+<th:block th:with="puedeEscribir=${session.rolUsuario == 'ADMIN' or (session.rolUsuario == 'COLABORADOR' and session.rolColaborador == 'EDITOR')}">
 <div class="container">
 
     <h2>Inventario</h2>
@@ -61,7 +62,7 @@
                 <th>Stock</th>
                 <th>Mínimo</th>
                 <th>Alerta</th>
-                <th>Actualizar</th>
+                <th th:if="${puedeEscribir}">Actualizar</th>
             </tr>
         </thead>
 
@@ -84,7 +85,7 @@
                 </td>
 
                 <!-- FORM ACTUALIZAR -->
-                <td>
+                <td th:if="${puedeEscribir}">
                     <form th:action="@{/admin/inventario/guardar}" method="post">
                         <input type="hidden" name="idInventario" th:value="${inv.idInventario}" />
                         <input type="number" name="stock" th:value="${inv.stock}" />
@@ -97,6 +98,7 @@
     </table>
 
 </div>
+</th:block>
 
 </body>
 </html>

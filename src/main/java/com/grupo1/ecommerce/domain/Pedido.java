@@ -45,6 +45,10 @@ public class Pedido implements Serializable {
     @JoinColumn(name = "id_zona_envio")
     private ZonaEnvio zonaEnvio;
 
+    @ManyToOne
+    @JoinColumn(name = "id_cupon")
+    private Cupon cupon;
+
     // DETALLE DEL PEDIDO (HU11)
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
     private List<PedidoDetalle> detalles;
@@ -72,6 +76,9 @@ public class Pedido implements Serializable {
 
     @Column(name = "costo_envio", precision = 10, scale = 2)
     private BigDecimal costoEnvio = BigDecimal.ZERO;
+
+    @Column(precision = 10, scale = 2)
+    private BigDecimal descuento = BigDecimal.ZERO;
 
     @NotNull
     @Column(nullable = false, precision = 10, scale = 2)

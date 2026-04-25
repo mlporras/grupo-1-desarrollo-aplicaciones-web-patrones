@@ -21,4 +21,9 @@ public class IndexController {
         model.addAttribute("productos", productos);
         return "/index";
     }
+
+    @GetMapping("/acceso-denegado")
+    public String accesoDenegado() {
+        return "/acceso_denegado";
+    }
 }
