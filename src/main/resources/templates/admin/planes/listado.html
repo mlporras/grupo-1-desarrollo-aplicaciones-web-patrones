@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{general/fragmentos :: head}"/>
+<body>
+    <header th:replace="~{general/fragmentos :: header}"/>
+
+    <main class="container py-5">
+        <h2 class="text-center mb-4 section-title">[[#{plan.titulo}]]</h2>
+
+        <div th:if="${tienda != null and tienda.plan != null}" class="alert alert-info text-center mb-4">
+            <i class="fas fa-crown me-1"></i>
+            [[#{plan.actual}]]: <strong>[[${tienda.plan.nombre}]]</strong>
+            <span th:if="${tienda.fechaVencimiento}">
+                | [[#{plan.vence}]]: [[${tienda.fechaVencimiento}]]
+            </span>
+            <span th:if="${tienda.estadoSuscripcion == 'PRUEBA'}" class="badge bg-warning text-dark ms-2">Prueba</span>
+            <span th:if="${tienda.estadoSuscripcion == 'ACTIVA'}" class="badge bg-success ms-2">Activa</span>
+        </div>
+
+        <div class="row g-4 justify-content-center">
+            <div th:each="p : ${planes}" class="col-md-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header text-center"
+                         th:classappend="${tienda != null and tienda.plan != null and tienda.plan.idPlan == p.idPlan} ? 'bg-success text-white' : 'modal-dark'">
+                        <h4 class="mb-0">[[${p.nombre}]]</h4>
+                    </div>
+                    <div class="card-body text-center">
+                        <h3 class="mb-3">
+                            <span class="price-badge">₡[[${p.precioMensual}]]</span>
+                            <small class="text-muted">/mes</small>
+                        </h3>
+                        <p th:if="${p.descripcion}" class="text-muted">[[${p.descripcion}]]</p>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-box me-1"></i> [[${p.maxProductos}]] productos</li>
+                            <li><i class="fas fa-users me-1"></i> [[${p.maxColaboradores}]] colaboradores</li>
+                            <li>
+                                <i th:classappend="${p.incluyeReportes} ? 'fas fa-check text-success' : 'fas fa-times text-danger'" class="me-1"></i>
+                                Reportes
+                            </li>
+                            <li>
+                                <i th:classappend="${p.incluyeCupones} ? 'fas fa-check text-success' : 'fas fa-times text-danger'" class="me-1"></i>
+                                Cupones
+                            </li>
+                        </ul>
+
+                        <form th:action="@{/admin/planes/asignar}" method="post" class="mt-3">
+                            <input type="hidden" name="idPlan" th:value="${p.idPlan}" />
+                            <button type="submit" class="btn btn-primary w-100"
+                                    th:disabled="${tienda != null and tienda.plan != null and tienda.plan.idPlan == p.idPlan}"
+                                    onclick="return confirm('¿Cambiar a este plan?')">
+                                <span th:if="${tienda != null and tienda.plan != null and tienda.plan.idPlan == p.idPlan}">
+                                    <i class="fas fa-check me-1"></i>[[#{plan.actual.label}]]
+                                </span>
+                                <span th:unless="${tienda != null and tienda.plan != null and tienda.plan.idPlan == p.idPlan}">
+                                    <i class="fas fa-arrow-right me-1"></i>[[#{plan.seleccionar}]]
+                                </span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-4" th:if="${#lists.isEmpty(planes)}">
+            <p class="text-muted">[[#{plan.vacio}]]</p>
+        </div>
+
+        <div class="text-center mt-4">
+            <a th:href="@{/admin/panel}" class="text-decoration-none">
+                <i class="fas fa-arrow-left me-1"></i>[[#{accion.regresar}]]
+            </a>
+        </div>
+    </main>
+
+    <div th:replace="~{general/fragmentos :: mostrarToast}"/>
+    <footer th:replace="~{general/fragmentos :: footer}"/>
+</body>
+</html>

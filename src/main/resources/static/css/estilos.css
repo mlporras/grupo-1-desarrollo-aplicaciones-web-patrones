@@ -1,3 +1,9 @@
+:root {
+    --color-primario: #1a1a2e;
+    --color-secundario: #0f3460;
+    --color-acento: #e2a03f;
+}
+
 body {
     background-color: #f5f5f5;
     font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -26,7 +32,7 @@ body {
 
 /* Hero banner */
 .hero-banner {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    background: linear-gradient(135deg, var(--color-primario) 0%, var(--color-secundario) 100%);
     color: #fff;
     padding: 2rem 0;
 }
@@ -66,7 +72,7 @@ body {
 /* Price badge */
 .price-badge {
     display: inline-block;
-    background-color: #0f3460;
+    background-color: var(--color-secundario);
     color: #fff;
     padding: 0.3rem 0.75rem;
     border-radius: 20px;
@@ -81,7 +87,7 @@ main, .main-content {
 
 /* Footer */
 footer {
-    background-color: #1a1a2e;
+    background-color: var(--color-primario);
     color: rgba(255, 255, 255, 0.75);
     padding: 1rem 0;
     text-align: center;
@@ -106,19 +112,19 @@ footer p {
 }
 
 .modal-header.modal-warning {
-    background-color: #e2a03f;
+    background-color: var(--color-acento);
     color: #fff;
 }
 
 /* Card header reused for auth forms */
 .card-header.modal-dark {
-    background-color: #1a1a2e;
+    background-color: var(--color-primario);
     color: #fff;
 }
 
 /* Stat card */
 .stat-card {
-    background: linear-gradient(135deg, #0f3460, #1a1a2e);
+    background: linear-gradient(135deg, var(--color-secundario), var(--color-primario));
     color: #fff;
     border: none;
     border-radius: 12px;
@@ -140,6 +146,6 @@ footer p {
     transform: translateX(-50%);
     width: 60px;
     height: 3px;
-    background-color: #0f3460;
+    background-color: var(--color-secundario);
     border-radius: 2px;
 }

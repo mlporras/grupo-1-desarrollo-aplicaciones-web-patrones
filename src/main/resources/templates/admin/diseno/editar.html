@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{general/fragmentos :: head}"/>
+<body>
+    <header th:replace="~{general/fragmentos :: header}"/>
+
+    <main class="container py-5">
+        <h2 class="text-center mb-4 section-title">[[#{diseno.titulo}]]</h2>
+
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-sm">
+                    <div class="card-header modal-dark">
+                        <h5 class="mb-0"><i class="fas fa-palette me-2"></i>[[#{diseno.personalizar}]]</h5>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/admin/diseno/guardar}" th:object="${diseno}" method="post" enctype="multipart/form-data" id="disenoForm">
+                            <input type="hidden" th:field="*{idDiseno}" />
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">[[#{diseno.plantilla}]]</label>
+                                <select class="form-select" th:field="*{plantilla}" id="plantillaSelect">
+                                    <option value="default">Default - Azul Oscuro</option>
+                                    <option value="moderna">Moderna - Tonos Verdes</option>
+                                    <option value="clasica">Clásica - Tonos Granate</option>
+                                </select>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label fw-bold">[[#{diseno.colorPrimario}]]</label>
+                                    <input type="color" class="form-control form-control-color w-100"
+                                           th:field="*{colorPrimario}" id="colorPrimarioInput" />
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label fw-bold">[[#{diseno.colorSecundario}]]</label>
+                                    <input type="color" class="form-control form-control-color w-100"
+                                           th:field="*{colorSecundario}" id="colorSecundarioInput" />
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label fw-bold">[[#{diseno.colorAcento}]]</label>
+                                    <input type="color" class="form-control form-control-color w-100"
+                                           th:field="*{colorAcento}" id="colorAcentoInput" />
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">[[#{diseno.logo}]]</label>
+                                <input type="file" class="form-control" name="logoFile" accept="image/jpeg,image/png" />
+                                <small class="text-muted">JPG o PNG, máximo 2MB</small>
+                                <div th:if="${diseno.rutaLogo}" class="mt-2">
+                                    <img th:src="@{${diseno.rutaLogo}}" alt="Logo actual"
+                                         style="max-height:60px;" class="border rounded p-1"/>
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-2 mt-4">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-1"></i>[[#{diseno.guardarBorrador}]]
+                                </button>
+                                <button type="submit" class="btn btn-outline-secondary"
+                                        formaction="/admin/diseno/preview" formmethod="post" formnovalidate>
+                                    <i class="fas fa-eye me-1"></i>[[#{config.preview}]]
+                                </button>
+                            </div>
+                        </form>
+
+                        <hr/>
+
+                        <div class="d-flex gap-2">
+                            <form th:action="@{/admin/diseno/publicar}" method="post">
+                                <button type="submit" class="btn btn-success"
+                                        onclick="return confirm('¿Publicar este diseño en la tienda?')">
+                                    <i class="fas fa-globe me-1"></i>[[#{diseno.publicar}]]
+                                </button>
+                            </form>
+                            <form th:action="@{/admin/diseno/revertir}" method="post">
+                                <button type="submit" class="btn btn-warning"
+                                        onclick="return confirm('¿Descartar el borrador y volver al diseño publicado?')">
+                                    <i class="fas fa-undo me-1"></i>[[#{diseno.revertir}]]
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-3">
+                    <a th:href="@{/admin/panel}" class="text-decoration-none">
+                        <i class="fas fa-arrow-left me-1"></i>[[#{accion.regresar}]]
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{general/fragmentos :: mostrarToast}"/>
+    <footer th:replace="~{general/fragmentos :: footer}"/>
+
+    <script>
+        (function () {
+            const root = document.documentElement;
+            const plantilla = document.getElementById('plantillaSelect');
+            const c1 = document.getElementById('colorPrimarioInput');
+            const c2 = document.getElementById('colorSecundarioInput');
+            const c3 = document.getElementById('colorAcentoInput');
+
+            const presets = {
+                default: { c1: '#1a1a2e', c2: '#0f3460', c3: '#e2a03f' },
+                moderna: { c1: '#0b3d2e', c2: '#1b6b4a', c3: '#e2a03f' },
+                clasica: { c1: '#3b0a0a', c2: '#7a1f1f', c3: '#e2a03f' }
+            };
+
+            function aplicarCSSVars() {
+                if (c1?.value) root.style.setProperty('--color-primario', c1.value);
+                if (c2?.value) root.style.setProperty('--color-secundario', c2.value);
+                if (c3?.value) root.style.setProperty('--color-acento', c3.value);
+            }
+
+            plantilla?.addEventListener('change', () => {
+                const p = presets[plantilla.value];
+                if (!p) return;
+                c1.value = p.c1;
+                c2.value = p.c2;
+                c3.value = p.c3;
+                aplicarCSSVars();
+            });
+
+            [c1, c2, c3].forEach(el => el?.addEventListener('input', aplicarCSSVars));
+            aplicarCSSVars();
+        })();
+    </script>
+</body>
+</html>

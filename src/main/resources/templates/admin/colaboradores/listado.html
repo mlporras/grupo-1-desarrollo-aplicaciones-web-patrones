@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{general/fragmentos :: head}"/>
+<body>
+    <header th:replace="~{general/fragmentos :: header}"/>
+
+    <main class="container py-5">
+        <h2 class="text-center mb-4 section-title">[[#{colaborador.titulo}]]</h2>
+
+        <div class="d-flex justify-content-between mb-3">
+            <span class="text-muted" th:text="${#lists.size(colaboradores)} + ' colaborador(es)'"></span>
+            <a th:href="@{/admin/colaboradores/nuevo}" class="btn btn-primary">
+                <i class="fas fa-user-plus me-1"></i>[[#{colaborador.nuevo}]]
+            </a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover bg-white shadow-sm">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>[[#{colaborador.nombre}]]</th>
+                        <th>[[#{colaborador.correo}]]</th>
+                        <th>[[#{colaborador.rol}]]</th>
+                        <th>[[#{colaborador.estado}]]</th>
+                        <th>[[#{colaborador.acciones}]]</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="c : ${colaboradores}">
+                        <td th:text="${c.idColaborador}"></td>
+                        <td th:text="${c.usuario.nombre}"></td>
+                        <td th:text="${c.usuario.correo}"></td>
+                        <td>
+                            <span class="badge bg-info" th:if="${c.rolColaborador == 'EDITOR'}">Editor</span>
+                            <span class="badge bg-secondary" th:if="${c.rolColaborador == 'VIEWER'}">Viewer</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-success" th:if="${c.activo}">Activo</span>
+                            <span class="badge bg-danger" th:unless="${c.activo}">Inactivo</span>
+                        </td>
+                        <td>
+                            <a th:href="@{'/admin/colaboradores/editar/' + ${c.idColaborador}}"
+                               class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a th:href="@{'/admin/colaboradores/eliminar/' + ${c.idColaborador}}"
+                               class="btn btn-sm btn-outline-danger"
+                               onclick="return confirm('¿Eliminar este colaborador?')">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(colaboradores)}">
+                        <td colspan="6" class="text-center text-muted py-3">[[#{colaborador.vacio}]]</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="text-center mt-3">
+            <a th:href="@{/admin/panel}" class="text-decoration-none">
+                <i class="fas fa-arrow-left me-1"></i>[[#{accion.regresar}]]
+            </a>
+        </div>
+    </main>
+
+    <div th:replace="~{general/fragmentos :: mostrarToast}"/>
+    <footer th:replace="~{general/fragmentos :: footer}"/>
+</body>
+</html>

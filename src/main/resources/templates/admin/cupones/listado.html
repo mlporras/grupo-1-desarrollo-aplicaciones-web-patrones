@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{general/fragmentos :: head}"/>
+<body>
+    <header th:replace="~{general/fragmentos :: header}"/>
+
+    <main class="container py-5">
+        <th:block th:with="puedeEscribir=${session.rolUsuario == 'ADMIN' or (session.rolUsuario == 'COLABORADOR' and session.rolColaborador == 'EDITOR')}">
+        <h2 class="text-center mb-4 section-title">[[#{cupon.titulo}]]</h2>
+
+        <div class="d-flex justify-content-between mb-3">
+            <span class="text-muted" th:text="${#lists.size(cupones)} + ' cupón(es)'"></span>
+            <a th:href="@{/admin/cupones/nuevo}" class="btn btn-primary" th:if="${puedeEscribir}">
+                <i class="fas fa-plus me-1"></i>[[#{cupon.nuevo}]]
+            </a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover bg-white shadow-sm">
+                <thead class="table-dark">
+                    <tr>
+                        <th>[[#{cupon.codigo}]]</th>
+                        <th>[[#{cupon.tipo}]]</th>
+                        <th>[[#{cupon.valor}]]</th>
+                        <th>[[#{cupon.vigencia}]]</th>
+                        <th>[[#{cupon.usos}]]</th>
+                        <th>[[#{colaborador.estado}]]</th>
+                        <th th:if="${puedeEscribir}">[[#{colaborador.acciones}]]</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="c : ${cupones}">
+                        <td><code th:text="${c.codigo}"></code></td>
+                        <td>
+                            <span th:if="${c.tipoDescuento == 'PORCENTAJE'}" class="badge bg-primary">%</span>
+                            <span th:if="${c.tipoDescuento == 'MONTO_FIJO'}" class="badge bg-warning text-dark">$</span>
+                            [[${c.tipoDescuento}]]
+                        </td>
+                        <td th:text="${c.valor}"></td>
+                        <td th:text="${c.fechaInicio} + ' - ' + ${c.fechaFin}"></td>
+                        <td th:text="${c.usosActuales} + '/' + (${c.usosMaximos} == 0 ? '∞' : ${c.usosMaximos})"></td>
+                        <td>
+                            <span class="badge bg-success" th:if="${c.activo}">Activo</span>
+                            <span class="badge bg-danger" th:unless="${c.activo}">Inactivo</span>
+                        </td>
+                        <td th:if="${puedeEscribir}">
+                            <a th:href="@{'/admin/cupones/editar/' + ${c.idCupon}}"
+                               class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a th:if="${c.activo}"
+                               th:href="@{'/admin/cupones/desactivar/' + ${c.idCupon}}"
+                               class="btn btn-sm btn-outline-danger"
+                               onclick="return confirm('¿Desactivar este cupón?')">
+                                <i class="fas fa-ban"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(cupones)}">
+                        <td colspan="7" class="text-center text-muted py-3">[[#{cupon.vacio}]]</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="text-center mt-3">
+            <a th:href="@{/admin/panel}" class="text-decoration-none">
+                <i class="fas fa-arrow-left me-1"></i>[[#{accion.regresar}]]
+            </a>
+        </div>
+        </th:block>
+    </main>
+
+    <div th:replace="~{general/fragmentos :: mostrarToast}"/>
+    <footer th:replace="~{general/fragmentos :: footer}"/>
+</body>
+</html>

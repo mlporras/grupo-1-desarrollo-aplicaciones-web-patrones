@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{general/fragmentos :: head}"/>
+<body>
+    <header th:replace="~{general/fragmentos :: header}"/>
+
+    <main class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <div class="card-header modal-dark">
+                        <h5 class="mb-0">
+                            <i class="fas fa-user-plus me-2"></i>
+                            <span th:if="${colaborador == null}">[[#{colaborador.nuevo}]]</span>
+                            <span th:unless="${colaborador == null}">[[#{colaborador.editar}]]</span>
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <th:block th:if="${colaborador == null}">
+                            <form th:action="@{/admin/colaboradores/guardar}" method="post">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">[[#{colaborador.nombre}]]</label>
+                                    <input type="text" class="form-control" name="nombre" required />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">[[#{colaborador.correo}]]</label>
+                                    <input type="email" class="form-control" name="correo" required />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">[[#{auth.contrasena}]]</label>
+                                    <input type="password" class="form-control" name="contrasena" required minlength="8" />
+                                    <small class="text-muted">[[#{auth.contrasena.ayuda}]]</small>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">[[#{colaborador.rol}]]</label>
+                                    <select class="form-select" name="rolColaborador" required>
+                                        <option value="EDITOR">Editor</option>
+                                        <option value="VIEWER">Viewer</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-save me-1"></i>[[#{accion.guardar}]]
+                                </button>
+                            </form>
+                        </th:block>
+
+                        <th:block th:unless="${colaborador == null}">
+                            <form th:action="@{/admin/colaboradores/actualizarRol}" method="post">
+                                <input type="hidden" name="idColaborador" th:value="${colaborador.idColaborador}" />
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">[[#{colaborador.nombre}]]</label>
+                                    <input type="text" class="form-control" th:value="${colaborador.usuario.nombre}" disabled />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">[[#{colaborador.correo}]]</label>
+                                    <input type="email" class="form-control" th:value="${colaborador.usuario.correo}" disabled />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">[[#{colaborador.rol}]]</label>
+                                    <select class="form-select" name="rolColaborador" required>
+                                        <option value="EDITOR" th:selected="${colaborador.rolColaborador == 'EDITOR'}">Editor</option>
+                                        <option value="VIEWER" th:selected="${colaborador.rolColaborador == 'VIEWER'}">Viewer</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-save me-1"></i>[[#{accion.actualizar}]]
+                                </button>
+                            </form>
+                        </th:block>
+                    </div>
+                </div>
+
+                <div class="text-center mt-3">
+                    <a th:href="@{/admin/colaboradores/listado}" class="text-decoration-none">
+                        <i class="fas fa-arrow-left me-1"></i>[[#{accion.regresar}]]
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{general/fragmentos :: mostrarToast}"/>
+    <footer th:replace="~{general/fragmentos :: footer}"/>
+</body>
+</html>

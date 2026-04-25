@@ -34,12 +34,26 @@ CREATE TABLE usuario (
   contrasena VARCHAR(255) NOT NULL,
   telefono VARCHAR(20),
   direccion VARCHAR(255),
-  rol ENUM('ADMIN','CLIENTE') NOT NULL DEFAULT 'CLIENTE',
+  rol ENUM('ADMIN','CLIENTE','COLABORADOR') NOT NULL DEFAULT 'CLIENTE',
   activo BOOLEAN DEFAULT TRUE,
   fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id_usuario),
   UNIQUE (correo),
   INDEX ndx_correo (correo)
+) ENGINE = InnoDB;
+
+-- HU15: Planes de suscripcion
+CREATE TABLE plan (
+  id_plan INT NOT NULL AUTO_INCREMENT,
+  nombre VARCHAR(100) NOT NULL,
+  precio_mensual DECIMAL(10,2) NOT NULL CHECK (precio_mensual > 0),
+  descripcion TEXT,
+  max_productos INT DEFAULT 50,
+  max_colaboradores INT DEFAULT 2,
+  incluye_reportes BOOLEAN DEFAULT FALSE,
+  incluye_cupones BOOLEAN DEFAULT FALSE,
+  activo BOOLEAN DEFAULT TRUE,
+  PRIMARY KEY (id_plan)
 ) ENGINE = InnoDB;
 
 CREATE TABLE tienda (
@@ -51,9 +65,13 @@ CREATE TABLE tienda (
   telefono_contacto VARCHAR(20),
   moneda VARCHAR(10) DEFAULT 'CRC',
   activo BOOLEAN DEFAULT TRUE,
+  id_plan INT NULL,
+  estado_suscripcion ENUM('ACTIVA','SUSPENDIDA','PRUEBA') DEFAULT 'PRUEBA',
+  fecha_vencimiento DATE NULL,
   PRIMARY KEY (id_tienda),
   UNIQUE (id_usuario),
-  CONSTRAINT fk_tienda_usuario FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario)
+  CONSTRAINT fk_tienda_usuario FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario),
+  CONSTRAINT fk_tienda_plan FOREIGN KEY (id_plan) REFERENCES plan(id_plan)
 ) ENGINE = InnoDB;
 
 CREATE TABLE categoria (
@@ -118,16 +136,33 @@ CREATE TABLE carrito_item (
   CONSTRAINT fk_carrito_producto FOREIGN KEY (id_producto) REFERENCES producto(id_producto)
 ) ENGINE = InnoDB;
 
+-- HU13: Cupones de descuento
+CREATE TABLE cupon (
+  id_cupon INT NOT NULL AUTO_INCREMENT,
+  codigo VARCHAR(50) NOT NULL,
+  tipo_descuento ENUM('PORCENTAJE','MONTO_FIJO') NOT NULL,
+  valor DECIMAL(10,2) NOT NULL CHECK (valor > 0),
+  fecha_inicio DATE NOT NULL,
+  fecha_fin DATE NOT NULL,
+  usos_maximos INT DEFAULT 0,
+  usos_actuales INT DEFAULT 0,
+  activo BOOLEAN DEFAULT TRUE,
+  PRIMARY KEY (id_cupon),
+  UNIQUE (codigo)
+) ENGINE = InnoDB;
+
 CREATE TABLE pedido (
   id_pedido INT NOT NULL AUTO_INCREMENT,
   numero_pedido VARCHAR(20) NOT NULL,
   id_usuario INT NOT NULL,
   id_metodo_pago INT,
   id_zona_envio INT,
+  id_cupon INT NULL,
   direccion_envio VARCHAR(255) NOT NULL,
   telefono_envio VARCHAR(20),
   subtotal DECIMAL(10,2) NOT NULL,
   costo_envio DECIMAL(10,2) DEFAULT 0.00,
+  descuento DECIMAL(10,2) DEFAULT 0.00,
   total DECIMAL(10,2) NOT NULL,
   estado ENUM('PENDIENTE','CONFIRMADO','ENVIADO','ENTREGADO','CANCELADO') DEFAULT 'PENDIENTE',
   fecha_pedido TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -137,7 +172,8 @@ CREATE TABLE pedido (
   INDEX ndx_estado (estado),
   CONSTRAINT fk_pedido_usuario FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario),
   CONSTRAINT fk_pedido_metodo FOREIGN KEY (id_metodo_pago) REFERENCES metodo_pago(id_metodo_pago),
-  CONSTRAINT fk_pedido_zona FOREIGN KEY (id_zona_envio) REFERENCES zona_envio(id_zona_envio)
+  CONSTRAINT fk_pedido_zona FOREIGN KEY (id_zona_envio) REFERENCES zona_envio(id_zona_envio),
+  CONSTRAINT fk_pedido_cupon FOREIGN KEY (id_cupon) REFERENCES cupon(id_cupon)
 ) ENGINE = InnoDB;
 
 CREATE TABLE detalle_pedido (
@@ -152,15 +188,63 @@ CREATE TABLE detalle_pedido (
   CONSTRAINT fk_detalle_producto FOREIGN KEY (id_producto) REFERENCES producto(id_producto)
 ) ENGINE = InnoDB;
 
+-- HU2: Backup de configuracion de tienda
+CREATE TABLE tienda_config_backup (
+  id_backup INT NOT NULL AUTO_INCREMENT,
+  id_tienda INT NOT NULL,
+  nombre_comercial VARCHAR(150),
+  descripcion TEXT,
+  correo_contacto VARCHAR(150),
+  telefono_contacto VARCHAR(20),
+  moneda VARCHAR(10),
+  fecha_backup TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id_backup),
+  CONSTRAINT fk_backup_tienda FOREIGN KEY (id_tienda) REFERENCES tienda(id_tienda)
+) ENGINE = InnoDB;
+
+-- HU7: Diseno personalizado de tienda
+CREATE TABLE diseno_tienda (
+  id_diseno INT NOT NULL AUTO_INCREMENT,
+  id_tienda INT NOT NULL,
+  plantilla VARCHAR(50) DEFAULT 'default',
+  color_primario VARCHAR(7) DEFAULT '#1a1a2e',
+  color_secundario VARCHAR(7) DEFAULT '#0f3460',
+  color_acento VARCHAR(7) DEFAULT '#e2a03f',
+  ruta_logo VARCHAR(1024),
+  borrador BOOLEAN DEFAULT TRUE,
+  fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id_diseno),
+  CONSTRAINT fk_diseno_tienda FOREIGN KEY (id_tienda) REFERENCES tienda(id_tienda)
+) ENGINE = InnoDB;
+
+-- HU14: Colaboradores de tienda
+CREATE TABLE colaborador (
+  id_colaborador INT NOT NULL AUTO_INCREMENT,
+  id_usuario INT NOT NULL,
+  id_tienda INT NOT NULL,
+  rol_colaborador ENUM('EDITOR','VIEWER') NOT NULL DEFAULT 'VIEWER',
+  activo BOOLEAN DEFAULT TRUE,
+  fecha_asignacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id_colaborador),
+  UNIQUE (id_usuario, id_tienda),
+  CONSTRAINT fk_colaborador_usuario FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario),
+  CONSTRAINT fk_colaborador_tienda FOREIGN KEY (id_tienda) REFERENCES tienda(id_tienda)
+) ENGINE = InnoDB;
+
 -- ===================== DATOS DE PRUEBA =====================
+
+INSERT INTO plan (nombre, precio_mensual, descripcion, max_productos, max_colaboradores, incluye_reportes, incluye_cupones) VALUES
+('Basico', 5000.00, 'Plan basico para emprendedores', 20, 1, FALSE, FALSE),
+('Profesional', 15000.00, 'Plan profesional con reportes', 100, 3, TRUE, TRUE),
+('Empresarial', 30000.00, 'Plan completo para empresas', 999, 10, TRUE, TRUE);
 
 INSERT INTO usuario (nombre, correo, contrasena, rol) VALUES
 ('Admin Demo', 'admin@tienda.com', 'admin123', 'ADMIN'),
 ('Carlos Lopez', 'carlos@correo.com', 'cliente123', 'CLIENTE'),
 ('Maria Gomez', 'maria@correo.com', 'cliente123', 'CLIENTE');
 
-INSERT INTO tienda (id_usuario, nombre_comercial, descripcion, correo_contacto, moneda) VALUES
-(1, 'Mi Tienda Online', 'Tienda de productos variados para emprendedores', 'contacto@mitienda.com', 'CRC');
+INSERT INTO tienda (id_usuario, nombre_comercial, descripcion, correo_contacto, moneda, id_plan, estado_suscripcion) VALUES
+(1, 'Mi Tienda Online', 'Tienda de productos variados para emprendedores', 'contacto@mitienda.com', 'CRC', 1, 'PRUEBA');
 
 INSERT INTO categoria (nombre, descripcion) VALUES
 ('Electronica', 'Dispositivos y accesorios electronicos'),

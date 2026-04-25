@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Vista Previa del Diseño</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" rel="stylesheet"/>
+    <link th:href="@{/webjars/font-awesome/css/all.css}" rel="stylesheet"/>
+    <link th:href="@{/css/estilos.css}" rel="stylesheet"/>
+    <style th:inline="text">
+        :root {
+            --color-primario: [[${diseno.colorPrimario}]];
+            --color-secundario: [[${diseno.colorSecundario}]];
+            --color-acento: [[${diseno.colorAcento}]];
+        }
+    </style>
+</head>
+<body>
+    <div class="alert alert-info text-center mb-0 rounded-0">
+        <i class="fas fa-eye me-1"></i> <strong>[[#{diseno.preview.banner}]]</strong>
+        <div class="mt-2">
+            <form th:action="@{/admin/diseno/publicar}" method="post" style="display:inline;">
+                <button type="submit" class="btn btn-success btn-sm">
+                    <i class="fas fa-check me-1"></i>[[#{diseno.publicar}]]
+                </button>
+            </form>
+            <a th:href="@{/admin/diseno}" class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-arrow-left me-1"></i>[[#{diseno.volverEditar}]]
+            </a>
+        </div>
+    </div>
+
+    <nav class="navbar navbar-expand-sm navbar-dark shadow" style="background-color: var(--color-primario);">
+        <div class="container">
+            <a href="#" class="navbar-brand">
+                <img th:if="${diseno.rutaLogo}" th:src="@{${diseno.rutaLogo}}"
+                     alt="Logo" style="max-height:35px;" class="me-2"/>
+                <i th:unless="${diseno.rutaLogo}" class="fas fa-store me-2"></i>
+                [[${tienda.nombreComercial}]]
+            </a>
+        </div>
+    </nav>
+
+    <div class="hero-banner" style="background: linear-gradient(135deg, var(--color-primario) 0%, var(--color-secundario) 100%);">
+        <div class="container">
+            <h1><i class="fas fa-store me-2"></i>[[${tienda.nombreComercial}]]</h1>
+        </div>
+    </div>
+
+    <main class="container py-5">
+        <h2 class="text-center mb-4 section-title">Productos Destacados</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm game-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Producto de ejemplo</h5>
+                        <p class="text-muted">Vista previa del diseño de tu tienda</p>
+                        <span class="price-badge" style="background-color: var(--color-secundario);">&#8353; 10,000</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm game-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Otro producto</h5>
+                        <p class="text-muted">Así se verán tus productos</p>
+                        <span class="price-badge" style="background-color: var(--color-secundario);">&#8353; 15,000</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm game-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Tercer producto</h5>
+                        <p class="text-muted">Con los colores personalizados</p>
+                        <span class="price-badge" style="background-color: var(--color-secundario);">&#8353; 8,500</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer style="background-color: var(--color-primario); color: rgba(255,255,255,0.75); padding: 1rem 0; text-align: center;">
+        <div class="container">
+            <p class="mb-0">[[${tienda.nombreComercial}]] - Vista Previa</p>
+        </div>
+    </footer>
+</body>
+</html>
