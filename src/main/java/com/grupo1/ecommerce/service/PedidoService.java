@@ -148,7 +148,6 @@ public class PedidoService {
             for (PedidoDetalle d : pedido.getDetalles()) {
                 BigDecimal sub = d.getPrecio()
                         .multiply(BigDecimal.valueOf(d.getCantidad()));
-
                 d.setSubtotal(sub);
                 subtotal = subtotal.add(sub);
                 d.setPedido(pedido);
@@ -163,10 +162,43 @@ public class PedidoService {
             pedido.setCostoEnvio(BigDecimal.ZERO);
         }
 
-        pedido.setTotal(
-            pedido.getSubtotal().add(pedido.getCostoEnvio())
-        );
+        pedido.setTotal(pedido.getSubtotal().add(pedido.getCostoEnvio()));
+        pedidoRepository.save(pedido);
+    }
 
+    @Transactional
+    public void cambiarEstado(Integer idPedido, String nuevoEstado) {
+        Pedido pedido = pedidoRepository.findById(idPedido)
+            .orElseThrow(() -> new IllegalArgumentException("Pedido no encontrado"));
+
+        List<String> estadosPermitidos = List.of("ENVIADO", "ENTREGADO");
+        if (!estadosPermitidos.contains(nuevoEstado)) {
+            throw new IllegalArgumentException("Estado no permitido: " + nuevoEstado);
+        }
+
+        pedido.setEstado(nuevoEstado);
+        pedidoRepository.save(pedido);
+    }
+
+    @Transactional
+    public void cancelarPedido(Integer idPedido) {
+        Pedido pedido = pedidoRepository.findById(idPedido)
+            .orElseThrow(() -> new IllegalArgumentException("Pedido no encontrado"));
+
+        if ("CANCELADO".equals(pedido.getEstado())) {
+            throw new IllegalStateException("El pedido ya está cancelado");
+        }
+
+        if (pedido.getDetalles() != null) {
+            for (PedidoDetalle detalle : pedido.getDetalles()) {
+                inventarioService.actualizarStock(
+                    detalle.getProducto(),
+                    inventarioService.getStock(detalle.getProducto()) + detalle.getCantidad()
+                );
+            }
+        }
+
+        pedido.setEstado("CANCELADO");
         pedidoRepository.save(pedido);
     }
 }

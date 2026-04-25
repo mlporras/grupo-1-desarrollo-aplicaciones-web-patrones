@@ -138,6 +138,19 @@
                 </a>
             </div>
 
+            <!-- REPORTES (HU12) -->
+            <div class="col-md-4">
+                <a href="/admin/reportes" style="text-decoration:none; color:inherit;">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-chart-bar fa-2x mb-3 text-primary"></i>
+                            <h5>[[#{admin.reportes}]]</h5>
+                            <p class="text-muted">[[#{admin.reportes.desc}]]</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
             <!-- PLANES (solo ADMIN) -->
             <div class="col-md-4" th:if="${session.rolUsuario == 'ADMIN'}">
                 <a href="/admin/planes/listado" style="text-decoration:none; color:inherit;">

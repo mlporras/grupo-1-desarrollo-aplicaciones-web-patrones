@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Reporte de Ventas</title>
+    <meta charset="UTF-8"/>
+</head>
+<body>
+<h2>Reporte de Ventas</h2>
+
+<!-- FILTRO POR FECHA -->
+<form method="get" th:action="@{/admin/reportes}">
+    <label>Desde:</label>
+    <input type="date" name="desde" th:value="${desde}"/>
+    <label>Hasta:</label>
+    <input type="date" name="hasta" th:value="${hasta}"/>
+    <button type="submit">Aplicar Filtro</button>
+    <a href="/admin/reportes">Limpiar Filtro</a>
+</form>
+
+<hr/>
+
+<!-- RESUMEN -->
+<div th:if="${cantidadPedidos == 0}">
+    <p><em>No hay datos disponibles</em></p>
+</div>
+
+<div th:if="${cantidadPedidos > 0}">
+    <h3>Resumen de Ventas</h3>
+    <p><strong>Total Acumulado:</strong> ₡<span th:text="${#numbers.formatDecimal(totalVentas, 1, 2)}"></span></p>
+    <p><strong>Cantidad de Pedidos:</strong> <span th:text="${cantidadPedidos}"></span></p>
+    <p><strong>Ticket Promedio:</strong> ₡<span th:text="${#numbers.formatDecimal(ticketPromedio, 1, 2)}"></span></p>
+
+    <h3>Productos Más Vendidos</h3>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Producto</th>
+                <th>Unidades Vendidas</th>
+                <th>Total Generado</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="p, stat : ${productos}">
+                <td th:text="${stat.index + 1}"></td>
+                <td th:text="${p.nombre}"></td>
+                <td th:text="${p.unidadesVendidas}"></td>
+                <td>₡<span th:text="${#numbers.formatDecimal(p.totalGenerado, 1, 2)}"></span></td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(productos)}">
+                <td colspan="4">No hay productos vendidos</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- EXPORTAR -->
+    <br/>
+    <h3>Exportar Reporte</h3>
+    <a th:href="@{/admin/reportes/exportar(formato='csv',desde=${desde},hasta=${hasta})}">
+        <button type="button">Exportar CSV</button>
+    </a>
+    <a th:href="@{/admin/reportes/exportar(formato='pdf',desde=${desde},hasta=${hasta})}">
+        <button type="button">Exportar PDF</button>
+    </a>
+</div>
+
+<br/>
+<a href="/admin/panel">← Volver al Panel</a>
+</body>
+</html>

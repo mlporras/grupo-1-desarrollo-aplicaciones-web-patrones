@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Cambiar Estado</title>
+    <meta charset="UTF-8"/>
+</head>
+<body>
+<th:block th:with="puedeEscribir=${session.rolUsuario == 'ADMIN' or (session.rolUsuario == 'COLABORADOR' and session.rolColaborador == 'EDITOR')}">
+
+<h2>Cambiar Estado — Pedido <span th:text="${pedido.numeroPedido}"></span></h2>
+<p><strong>Estado actual:</strong> <span th:text="${pedido.estado}"></span></p>
+
+<div th:if="${puedeEscribir}">
+    <form th:action="@{/admin/pedidos/estado/guardar}" method="post">
+        <input type="hidden" name="idPedido" th:value="${pedido.idPedido}"/>
+
+        <label>Nuevo Estado:</label>
+        <select name="estado" required>
+            <option value="">Seleccione...</option>
+            <option value="ENVIADO">Enviado</option>
+            <option value="ENTREGADO">Entregado</option>
+        </select>
+        <br/><br/>
+        <button type="submit">Guardar Cambio</button>
+        <a href="/admin/pedidos/listado">Cancelar</a>
+    </form>
+</div>
+<div th:unless="${puedeEscribir}">
+    <p style="color:gray;">No tienes permisos para cambiar el estado de pedidos.</p>
+    <a href="/admin/pedidos/listado">← Volver al listado</a>
+</div>
+
+</th:block>
+</body>
+</html>

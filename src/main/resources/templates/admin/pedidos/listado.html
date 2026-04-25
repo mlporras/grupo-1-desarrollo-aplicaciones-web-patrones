@@ -2,13 +2,16 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Pedidos</title>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8"/>
 </head>
-
 <body>
 
 <th:block th:with="puedeEscribir=${session.rolUsuario == 'ADMIN' or (session.rolUsuario == 'COLABORADOR' and session.rolColaborador == 'EDITOR')}">
 <h2>Lista de Pedidos</h2>
+
+<!-- Mensajes -->
+<div th:if="${mensaje}" style="color:green" th:text="${mensaje}"></div>
+<div th:if="${error}" style="color:red" th:text="${error}"></div>
 
 <a href="/admin/pedidos/nuevo" th:if="${puedeEscribir}">+ Nuevo Pedido</a>
 
@@ -22,9 +25,9 @@
             <th>Zona Envío</th>
             <th>Total</th>
             <th>Estado</th>
+            <th>Acciones</th>
         </tr>
     </thead>
-
     <tbody>
         <tr th:each="p : ${pedidos}">
             <td th:text="${p.idPedido}"></td>
@@ -34,10 +37,22 @@
             <td th:text="${p.zonaEnvio != null ? p.zonaEnvio.nombre : 'N/A'}"></td>
             <td th:text="${p.total}"></td>
             <td th:text="${p.estado}"></td>
+            <td>
+                <a th:href="@{/admin/pedidos/detalle/{id}(id=${p.idPedido})}">Ver Detalle</a>
+                <th:block th:if="${puedeEscribir}">
+                | <a th:href="@{/admin/pedidos/estado/{id}(id=${p.idPedido})}">Cambiar Estado</a> |
+                <form th:action="@{/admin/pedidos/cancelar/{id}(id=${p.idPedido})}"
+                      method="post"
+                      style="display:inline"
+                      onsubmit="return confirm('¿Desea cancelar este pedido?')">
+                    <button type="submit"
+                            th:disabled="${p.estado == 'CANCELADO'}">Cancelar</button>
+                </form>
+                </th:block>
+            </td>
         </tr>
-
         <tr th:if="${#lists.isEmpty(pedidos)}">
-            <td colspan="7">No hay pedidos</td>
+            <td colspan="8">No hay pedidos</td>
         </tr>
     </tbody>
 </table>
