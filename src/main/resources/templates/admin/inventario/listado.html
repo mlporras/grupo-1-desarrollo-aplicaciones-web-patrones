@@ -45,6 +45,26 @@
         button {
             padding: 5px 10px;
         }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .btn-back {
+            padding: 10px 15px;
+            background-color: #6c757d;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .btn-back:hover {
+            background-color: #545b62;
+        }
     </style>
 </head>
 
@@ -53,7 +73,10 @@
 <th:block th:with="puedeEscribir=${session.rolUsuario == 'ADMIN' or (session.rolUsuario == 'COLABORADOR' and session.rolColaborador == 'EDITOR')}">
 <div class="container">
 
-    <h2>Inventario</h2>
+    <div class="top-bar">
+        <h2>Inventario</h2>
+        <a href="/admin/panel" class="btn-back">← Volver al Panel</a>
+    </div>
 
     <table>
         <thead>
@@ -86,9 +109,10 @@
 
                 <!-- FORM ACTUALIZAR -->
                 <td th:if="${puedeEscribir}">
-                    <form th:action="@{/admin/inventario/guardar}" method="post">
+                    <form th:action="@{/admin/inventario/guardar}" method="post"
+                          onsubmit="return confirm('¿Confirmar el nuevo stock: ' + this.querySelector('input[name=stock]').value + '?');">
                         <input type="hidden" name="idInventario" th:value="${inv.idInventario}" />
-                        <input type="number" name="stock" th:value="${inv.stock}" />
+                        <input type="number" name="stock" th:value="${inv.stock}" min="0" required />
                         <button type="submit">Guardar</button>
                     </form>
                 </td>

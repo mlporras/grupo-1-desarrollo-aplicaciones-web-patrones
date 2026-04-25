@@ -1,12 +1,14 @@
 package com.grupo1.ecommerce.controller;
 
-import com.grupo1.ecommerce.domain.Inventario;
 import com.grupo1.ecommerce.service.InventarioService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping("/admin/inventario")
@@ -22,8 +24,9 @@ public class InventarioController {
     }
 
     @PostMapping("/guardar")
-    public String guardar(Inventario inventario){
-        inventarioService.save(inventario);
+    public String guardar(@RequestParam Integer idInventario,
+                          @RequestParam Integer stock) {
+        inventarioService.actualizarStockPorId(idInventario, stock);
         return "redirect:/admin/inventario/listado";
     }
 }

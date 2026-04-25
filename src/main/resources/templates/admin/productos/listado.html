@@ -42,6 +42,14 @@
             background-color: #1b4fa8;
         }
 
+        .btn-back {
+            background-color: #6c757d;
+        }
+
+        .btn-back:hover {
+            background-color: #545b62;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -100,10 +108,12 @@
     <th:block th:with="puedeEscribir=${session.rolUsuario == 'ADMIN' or (session.rolUsuario == 'COLABORADOR' and session.rolColaborador == 'EDITOR')}">
     <div class="container">
 
-        <!-- Botón crear -->
         <div class="top-bar">
             <h2>Lista de Productos</h2>
-            <a href="/admin/productos/nuevo" class="btn" th:if="${puedeEscribir}">+ Nuevo Producto</a>
+            <div>
+                <a href="/admin/panel" class="btn btn-back">← Volver al Panel</a>
+                <a href="/admin/productos/nuevo" class="btn" th:if="${puedeEscribir}">+ Nuevo Producto</a>
+            </div>
         </div>
 
         <!-- Tabla -->

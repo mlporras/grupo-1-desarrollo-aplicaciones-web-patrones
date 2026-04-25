@@ -98,7 +98,7 @@
             <label>Categoría</label>
             <select th:field="*{categoria}">
                 <option th:each="cat : ${categorias}"
-                        th:value="${cat}"
+                        th:value="${cat.idCategoria}"
                         th:text="${cat.nombre}">
                 </option>
             </select>

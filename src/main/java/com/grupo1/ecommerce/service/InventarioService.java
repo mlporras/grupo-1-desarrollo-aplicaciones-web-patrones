@@ -25,6 +25,11 @@ public class InventarioService {
     }
 
     @Transactional(readOnly = true)
+    public Optional<Inventario> getInventario(Integer idInventario) {
+        return inventarioRepository.findById(idInventario);
+    }
+
+    @Transactional(readOnly = true)
     public Optional<Inventario> getInventarioPorProducto(Producto producto) {
         return inventarioRepository.findByProducto(producto);
     }
@@ -44,6 +49,14 @@ public class InventarioService {
     @Transactional
     public void save(Inventario inventario) {
         inventarioRepository.save(inventario);
+    }
+
+    @Transactional
+    public void actualizarStockPorId(Integer idInventario, Integer nuevoStock) {
+        Inventario inv = inventarioRepository.findById(idInventario)
+                .orElseThrow(() -> new IllegalArgumentException("Inventario no encontrado."));
+        inv.setStock(nuevoStock);
+        inventarioRepository.save(inv);
     }
 
     @Transactional

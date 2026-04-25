@@ -11,6 +11,8 @@
         td { padding: 10px; text-align: center; border-bottom: 1px solid #eee; }
         .btn { padding: 10px 15px; background-color: #2d6cdf; color: white; text-decoration: none; border-radius: 6px; }
         .btn:hover { background-color: #1b4fa8; }
+        .btn-back { background-color: #6c757d; }
+        .btn-back:hover { background-color: #545b62; }
         .top-bar { display: flex; justify-content: space-between; margin-bottom: 20px; }
         .estado-activo { color: green; font-weight: bold; }
         .estado-inactivo { color: red; font-weight: bold; }
@@ -21,7 +23,10 @@
 <div class="container">
     <div class="top-bar">
         <h2>Métodos de Pago</h2>
-        <a href="/admin/metodos/nuevo" class="btn" th:if="${puedeEscribir}">+ Nuevo Método</a>
+        <div>
+            <a href="/admin/panel" class="btn btn-back">← Volver al Panel</a>
+            <a href="/admin/metodos/nuevo" class="btn" th:if="${puedeEscribir}">+ Nuevo Método</a>
+        </div>
     </div>
 
     <table>
@@ -49,8 +54,6 @@
         </tbody>
     </table>
 
-    <br/>
-    <a href="/admin/panel">← Volver al panel</a>
 </div>
 </th:block>
 </body>
