@@ -1,7 +1,6 @@
 /target/
 
 # IDE / Editor
-.cursor/
 .vscode/
 .idea/
 .settings/
