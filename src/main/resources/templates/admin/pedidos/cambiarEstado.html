@@ -3,33 +3,76 @@
 <head>
     <title>Cambiar Estado</title>
     <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f6f9; margin: 0; }
+        .navbar { background-color: #1f3b5c; color: white; padding: 15px; text-align: center; }
+        .container { width: 90%; max-width: 500px; margin: 30px auto; }
+        .card { background: white; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,.15); padding: 24px; }
+        .card h3 { margin-top: 0; color: #1f3b5c; }
+        .info { margin-bottom: 16px; color: #555; }
+        .info strong { color: #333; }
+        label { display: block; font-weight: bold; margin-bottom: 6px; color: #333; }
+        select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; margin-bottom: 20px; }
+        .btn-group { display: flex; gap: 10px; }
+        .btn { padding: 10px 20px; border: none; border-radius: 6px; font-size: 14px; cursor: pointer; text-decoration: none; text-align: center; }
+        .btn-primary { background-color: #2d6cdf; color: white; }
+        .btn-primary:hover { background-color: #1b4fa8; }
+        .btn-secondary { background-color: #6c757d; color: white; }
+        .btn-secondary:hover { background-color: #545b62; }
+        .no-permisos { color: #888; font-style: italic; margin-top: 16px; }
+        .badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; color: white; }
+        .badge-confirmado { background: #17a2b8; }
+        .badge-enviado { background: #ffc107; color: #333; }
+        .badge-entregado { background: #28a745; }
+        .badge-cancelado { background: #dc3545; }
+        .badge-pendiente { background: #6c757d; }
+    </style>
 </head>
 <body>
+
+<div class="navbar">
+    <h1>Cambiar Estado de Pedido</h1>
+</div>
+
 <th:block th:with="puedeEscribir=${session.rolUsuario == 'ADMIN' or (session.rolUsuario == 'COLABORADOR' and session.rolColaborador == 'EDITOR')}">
+<div class="container">
 
-<h2>Cambiar Estado — Pedido <span th:text="${pedido.numeroPedido}"></span></h2>
-<p><strong>Estado actual:</strong> <span th:text="${pedido.estado}"></span></p>
+    <div class="card">
+        <h3 th:text="'Pedido ' + ${pedido.numeroPedido}"></h3>
+        <div class="info">
+            <strong>Estado actual:</strong>
+            <span class="badge"
+                  th:classappend="${pedido.estado == 'CONFIRMADO'} ? 'badge-confirmado' :
+                                  (${pedido.estado == 'ENVIADO'} ? 'badge-enviado' :
+                                  (${pedido.estado == 'ENTREGADO'} ? 'badge-entregado' :
+                                  (${pedido.estado == 'CANCELADO'} ? 'badge-cancelado' : 'badge-pendiente')))"
+                  th:text="${pedido.estado}"></span>
+        </div>
 
-<div th:if="${puedeEscribir}">
-    <form th:action="@{/admin/pedidos/estado/guardar}" method="post">
-        <input type="hidden" name="idPedido" th:value="${pedido.idPedido}"/>
+        <div th:if="${puedeEscribir}">
+            <form th:action="@{/admin/pedidos/estado/guardar}" method="post">
+                <input type="hidden" name="idPedido" th:value="${pedido.idPedido}"/>
+                <label>Nuevo Estado:</label>
+                <select name="estado" required>
+                    <option value="">Seleccione...</option>
+                    <option value="ENVIADO">Enviado</option>
+                    <option value="ENTREGADO">Entregado</option>
+                </select>
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-primary">Guardar Cambio</button>
+                    <a href="/admin/pedidos/listado" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+        <div th:unless="${puedeEscribir}">
+            <p class="no-permisos">No tienes permisos para cambiar el estado de pedidos.</p>
+            <a href="/admin/pedidos/listado" class="btn btn-secondary">← Volver al listado</a>
+        </div>
+    </div>
 
-        <label>Nuevo Estado:</label>
-        <select name="estado" required>
-            <option value="">Seleccione...</option>
-            <option value="ENVIADO">Enviado</option>
-            <option value="ENTREGADO">Entregado</option>
-        </select>
-        <br/><br/>
-        <button type="submit">Guardar Cambio</button>
-        <a href="/admin/pedidos/listado">Cancelar</a>
-    </form>
 </div>
-<div th:unless="${puedeEscribir}">
-    <p style="color:gray;">No tienes permisos para cambiar el estado de pedidos.</p>
-    <a href="/admin/pedidos/listado">← Volver al listado</a>
-</div>
-
 </th:block>
+
 </body>
 </html>

@@ -3,46 +3,114 @@
 <head>
     <title>Detalle del Pedido</title>
     <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f6f9; margin: 0; }
+        .navbar { background-color: #1f3b5c; color: white; padding: 15px; text-align: center; }
+        .container { width: 90%; max-width: 800px; margin: 30px auto; }
+        .card { background: white; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,.15); padding: 24px; margin-bottom: 20px; }
+        .card h3 { margin-top: 0; color: #1f3b5c; border-bottom: 2px solid #eee; padding-bottom: 8px; }
+        .info-row { display: flex; padding: 6px 0; }
+        .info-label { font-weight: bold; min-width: 180px; color: #555; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { background-color: #1f3b5c; color: white; padding: 10px; text-align: center; }
+        td { padding: 10px; text-align: center; border-bottom: 1px solid #eee; }
+        tr:hover { background-color: #f2f2f2; }
+        .totales .row { display: flex; justify-content: space-between; padding: 6px 0; }
+        .totales .row.total { font-size: 18px; font-weight: bold; color: #1f3b5c; border-top: 2px solid #1f3b5c; padding-top: 10px; margin-top: 6px; }
+        .totales .row.descuento { color: #28a745; }
+        .btn { padding: 10px 15px; background-color: #6c757d; color: white; text-decoration: none; border-radius: 6px; font-size: 14px; }
+        .btn:hover { background-color: #545b62; }
+        .badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; color: white; }
+        .badge-confirmado { background: #17a2b8; }
+        .badge-enviado { background: #ffc107; color: #333; }
+        .badge-entregado { background: #28a745; }
+        .badge-cancelado { background: #dc3545; }
+        .badge-pendiente { background: #6c757d; }
+    </style>
 </head>
 <body>
-<h2>Detalle del Pedido <span th:text="${pedido.numeroPedido}"></span></h2>
 
-<h3>Información General</h3>
-<p><strong>Estado:</strong> <span th:text="${pedido.estado}"></span></p>
-<p><strong>Fecha:</strong> <span th:text="${#temporals.format(pedido.fechaPedido, 'dd/MM/yyyy HH:mm')}"></span></p>
-<p><strong>Dirección de Envío:</strong> <span th:text="${pedido.direccionEnvio}"></span></p>
-<p><strong>Método de Pago:</strong> <span th:text="${pedido.metodoPago != null ? pedido.metodoPago.nombre : 'N/A'}"></span></p>
-<p><strong>Zona de Envío:</strong> <span th:text="${pedido.zonaEnvio != null ? pedido.zonaEnvio.nombre : 'N/A'}"></span></p>
+<div class="navbar">
+    <h1>Detalle del Pedido</h1>
+</div>
 
-<h3>Productos</h3>
-<table border="1">
-    <thead>
-        <tr>
-            <th>Producto</th>
-            <th>Cantidad</th>
-            <th>Precio Unitario</th>
-            <th>Subtotal</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr th:each="d : ${pedido.detalles}">
-            <td th:text="${d.producto.nombre}"></td>
-            <td th:text="${d.cantidad}"></td>
-            <td th:text="${d.precio}"></td>
-            <td th:text="${d.subtotal}"></td>
-        </tr>
-    </tbody>
-</table>
+<div class="container">
 
-<h3>Totales</h3>
-<p><strong>Subtotal:</strong> <span th:text="${pedido.subtotal}"></span></p>
-<p><strong>Costo de Envío:</strong> <span th:text="${pedido.costoEnvio}"></span></p>
-<p th:if="${pedido.descuento != null and pedido.descuento > 0}">
-    <strong>Descuento (Cupón):</strong> -<span th:text="${pedido.descuento}"></span>
-</p>
-<p><strong>Total:</strong> <span th:text="${pedido.total}"></span></p>
+    <div class="card">
+        <h3 th:text="'Pedido ' + ${pedido.numeroPedido}"></h3>
+        <div class="info-row">
+            <span class="info-label">Estado:</span>
+            <span class="badge"
+                  th:classappend="${pedido.estado == 'CONFIRMADO'} ? 'badge-confirmado' :
+                                  (${pedido.estado == 'ENVIADO'} ? 'badge-enviado' :
+                                  (${pedido.estado == 'ENTREGADO'} ? 'badge-entregado' :
+                                  (${pedido.estado == 'CANCELADO'} ? 'badge-cancelado' : 'badge-pendiente')))"
+                  th:text="${pedido.estado}"></span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Fecha:</span>
+            <span th:text="${#temporals.format(pedido.fechaPedido, 'dd/MM/yyyy HH:mm')}"></span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Dirección de Envío:</span>
+            <span th:text="${pedido.direccionEnvio}"></span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Método de Pago:</span>
+            <span th:text="${pedido.metodoPago != null ? pedido.metodoPago.nombre : 'N/A'}"></span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Zona de Envío:</span>
+            <span th:text="${pedido.zonaEnvio != null ? pedido.zonaEnvio.nombre : 'N/A'}"></span>
+        </div>
+    </div>
 
-<br/>
-<a href="/admin/pedidos/listado">← Volver al listado</a>
+    <div class="card">
+        <h3>Productos</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Precio Unitario</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="d : ${pedido.detalles}">
+                    <td th:text="${d.producto.nombre}"></td>
+                    <td th:text="${d.cantidad}"></td>
+                    <td th:text="${'₡' + #numbers.formatDecimal(d.precio, 1, 2)}"></td>
+                    <td th:text="${'₡' + #numbers.formatDecimal(d.subtotal, 1, 2)}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card totales">
+        <h3>Totales</h3>
+        <div class="row">
+            <span>Subtotal:</span>
+            <span th:text="${'₡' + #numbers.formatDecimal(pedido.subtotal, 1, 2)}"></span>
+        </div>
+        <div class="row">
+            <span>Costo de Envío:</span>
+            <span th:text="${'₡' + #numbers.formatDecimal(pedido.costoEnvio, 1, 2)}"></span>
+        </div>
+        <div class="row descuento" th:if="${pedido.descuento != null and pedido.descuento > 0}">
+            <span>Descuento (Cupón):</span>
+            <span th:text="${'-₡' + #numbers.formatDecimal(pedido.descuento, 1, 2)}"></span>
+        </div>
+        <div class="row total">
+            <span>Total:</span>
+            <span th:text="${'₡' + #numbers.formatDecimal(pedido.total, 1, 2)}"></span>
+        </div>
+    </div>
+
+    <a href="/admin/pedidos/listado" class="btn">← Volver al listado</a>
+
+</div>
+
 </body>
 </html>

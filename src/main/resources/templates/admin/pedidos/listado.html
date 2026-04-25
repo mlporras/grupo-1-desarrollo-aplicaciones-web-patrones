@@ -3,60 +3,103 @@
 <head>
     <title>Pedidos</title>
     <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f6f9; margin: 0; }
+        .navbar { background-color: #1f3b5c; color: white; padding: 15px; text-align: center; }
+        .container { width: 90%; margin: 30px auto; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .btn { padding: 10px 15px; background-color: #2d6cdf; color: white; text-decoration: none; border-radius: 6px; font-size: 14px; }
+        .btn:hover { background-color: #1b4fa8; }
+        .btn-back { background-color: #6c757d; }
+        .btn-back:hover { background-color: #545b62; }
+        .msg-ok { background: #d4edda; color: #155724; padding: 10px 16px; border-radius: 6px; margin-bottom: 16px; }
+        .msg-err { background: #f8d7da; color: #721c24; padding: 10px 16px; border-radius: 6px; margin-bottom: 16px; }
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,.15); }
+        th { background-color: #1f3b5c; color: white; padding: 12px; text-align: center; }
+        td { padding: 10px; text-align: center; border-bottom: 1px solid #eee; }
+        tr:hover { background-color: #f2f2f2; }
+        .acciones a { margin: 0 4px; text-decoration: none; color: #2d6cdf; font-weight: bold; }
+        .acciones a:hover { text-decoration: underline; }
+        .btn-cancel { padding: 4px 10px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; }
+        .btn-cancel:hover { background: #c82333; }
+        .btn-cancel:disabled { background: #aaa; cursor: not-allowed; }
+        .badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; color: white; }
+        .badge-confirmado { background: #17a2b8; }
+        .badge-enviado { background: #ffc107; color: #333; }
+        .badge-entregado { background: #28a745; }
+        .badge-cancelado { background: #dc3545; }
+        .badge-pendiente { background: #6c757d; }
+    </style>
 </head>
 <body>
 
+<div class="navbar">
+    <h1>Administración de Pedidos</h1>
+</div>
+
 <th:block th:with="puedeEscribir=${session.rolUsuario == 'ADMIN' or (session.rolUsuario == 'COLABORADOR' and session.rolColaborador == 'EDITOR')}">
-<h2>Lista de Pedidos</h2>
+<div class="container">
 
-<!-- Mensajes -->
-<div th:if="${mensaje}" style="color:green" th:text="${mensaje}"></div>
-<div th:if="${error}" style="color:red" th:text="${error}"></div>
+    <div th:if="${mensaje}" class="msg-ok" th:text="${mensaje}"></div>
+    <div th:if="${error}" class="msg-err" th:text="${error}"></div>
 
-<a href="/admin/pedidos/nuevo" th:if="${puedeEscribir}">+ Nuevo Pedido</a>
+    <div class="top-bar">
+        <h2>Lista de Pedidos</h2>
+        <div>
+            <a href="/admin/panel" class="btn btn-back">← Panel</a>
+            <a href="/admin/pedidos/nuevo" class="btn" th:if="${puedeEscribir}">+ Nuevo Pedido</a>
+        </div>
+    </div>
 
-<table border="1">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Número</th>
-            <th>Usuario</th>
-            <th>Método Pago</th>
-            <th>Zona Envío</th>
-            <th>Total</th>
-            <th>Estado</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr th:each="p : ${pedidos}">
-            <td th:text="${p.idPedido}"></td>
-            <td th:text="${p.numeroPedido}"></td>
-            <td th:text="${p.usuario.nombre}"></td>
-            <td th:text="${p.metodoPago != null ? p.metodoPago.nombre : 'N/A'}"></td>
-            <td th:text="${p.zonaEnvio != null ? p.zonaEnvio.nombre : 'N/A'}"></td>
-            <td th:text="${p.total}"></td>
-            <td th:text="${p.estado}"></td>
-            <td>
-                <a th:href="@{/admin/pedidos/detalle/{id}(id=${p.idPedido})}">Ver Detalle</a>
-                <th:block th:if="${puedeEscribir}">
-                | <a th:href="@{/admin/pedidos/estado/{id}(id=${p.idPedido})}">Cambiar Estado</a> |
-                <form th:action="@{/admin/pedidos/cancelar/{id}(id=${p.idPedido})}"
-                      method="post"
-                      style="display:inline"
-                      onsubmit="return confirm('¿Desea cancelar este pedido?')">
-                    <button type="submit"
-                            th:disabled="${p.estado == 'CANCELADO'}">Cancelar</button>
-                </form>
-                </th:block>
-            </td>
-        </tr>
-        <tr th:if="${#lists.isEmpty(pedidos)}">
-            <td colspan="8">No hay pedidos</td>
-        </tr>
-    </tbody>
-</table>
+    <table>
+        <thead>
+            <tr>
+                <th>Número</th>
+                <th>Cliente</th>
+                <th>Método Pago</th>
+                <th>Zona Envío</th>
+                <th>Total</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="p : ${pedidos}">
+                <td th:text="${p.numeroPedido}"></td>
+                <td th:text="${p.usuario.nombre}"></td>
+                <td th:text="${p.metodoPago != null ? p.metodoPago.nombre : 'N/A'}"></td>
+                <td th:text="${p.zonaEnvio != null ? p.zonaEnvio.nombre : 'N/A'}"></td>
+                <td th:text="${'₡' + #numbers.formatDecimal(p.total, 1, 2)}"></td>
+                <td>
+                    <span class="badge"
+                          th:classappend="${p.estado == 'CONFIRMADO'} ? 'badge-confirmado' :
+                                          (${p.estado == 'ENVIADO'} ? 'badge-enviado' :
+                                          (${p.estado == 'ENTREGADO'} ? 'badge-entregado' :
+                                          (${p.estado == 'CANCELADO'} ? 'badge-cancelado' : 'badge-pendiente')))"
+                          th:text="${p.estado}"></span>
+                </td>
+                <td class="acciones">
+                    <a th:href="@{/admin/pedidos/detalle/{id}(id=${p.idPedido})}">Ver Detalle</a>
+                    <th:block th:if="${puedeEscribir}">
+                    | <a th:href="@{/admin/pedidos/estado/{id}(id=${p.idPedido})}">Cambiar Estado</a> |
+                    <form th:action="@{/admin/pedidos/cancelar/{id}(id=${p.idPedido})}"
+                          method="post" style="display:inline"
+                          onsubmit="return confirm('¿Desea cancelar este pedido?')">
+                        <button type="submit" class="btn-cancel"
+                                th:disabled="${p.estado == 'CANCELADO'}">Cancelar</button>
+                    </form>
+                    </th:block>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(pedidos)}">
+                <td colspan="7">No hay pedidos registrados</td>
+            </tr>
+        </tbody>
+    </table>
 
+</div>
 </th:block>
+
 </body>
 </html>

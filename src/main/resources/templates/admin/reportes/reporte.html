@@ -3,68 +3,115 @@
 <head>
     <title>Reporte de Ventas</title>
     <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f6f9; margin: 0; }
+        .navbar { background-color: #1f3b5c; color: white; padding: 15px; text-align: center; }
+        .container { width: 90%; margin: 30px auto; }
+        .card { background: white; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,.15); padding: 24px; margin-bottom: 20px; }
+        .card h3 { margin-top: 0; color: #1f3b5c; border-bottom: 2px solid #eee; padding-bottom: 8px; }
+        .filter-bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .filter-bar label { font-weight: bold; color: #333; }
+        .filter-bar input[type="date"] { padding: 8px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
+        .btn { padding: 10px 15px; border: none; border-radius: 6px; font-size: 14px; cursor: pointer; text-decoration: none; display: inline-block; }
+        .btn-primary { background-color: #2d6cdf; color: white; }
+        .btn-primary:hover { background-color: #1b4fa8; }
+        .btn-secondary { background-color: #6c757d; color: white; }
+        .btn-secondary:hover { background-color: #545b62; }
+        .btn-success { background-color: #28a745; color: white; }
+        .btn-success:hover { background-color: #218838; }
+        .btn-info { background-color: #17a2b8; color: white; }
+        .btn-info:hover { background-color: #138496; }
+        .stats { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 20px; }
+        .stat-card { flex: 1; min-width: 200px; background: #1f3b5c; color: white; border-radius: 10px; padding: 20px; text-align: center; }
+        .stat-card .value { font-size: 28px; font-weight: bold; margin: 8px 0; }
+        .stat-card .label { font-size: 13px; opacity: .8; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background-color: #1f3b5c; color: white; padding: 12px; text-align: center; }
+        td { padding: 10px; text-align: center; border-bottom: 1px solid #eee; }
+        tr:hover { background-color: #f2f2f2; }
+        .export-bar { display: flex; gap: 10px; margin-top: 16px; }
+        .empty-msg { text-align: center; color: #888; font-style: italic; padding: 30px 0; }
+    </style>
 </head>
 <body>
-<h2>Reporte de Ventas</h2>
 
-<!-- FILTRO POR FECHA -->
-<form method="get" th:action="@{/admin/reportes}">
-    <label>Desde:</label>
-    <input type="date" name="desde" th:value="${desde}"/>
-    <label>Hasta:</label>
-    <input type="date" name="hasta" th:value="${hasta}"/>
-    <button type="submit">Aplicar Filtro</button>
-    <a href="/admin/reportes">Limpiar Filtro</a>
-</form>
-
-<hr/>
-
-<!-- RESUMEN -->
-<div th:if="${cantidadPedidos == 0}">
-    <p><em>No hay datos disponibles</em></p>
+<div class="navbar">
+    <h1>Reportes de Ventas</h1>
 </div>
 
-<div th:if="${cantidadPedidos > 0}">
-    <h3>Resumen de Ventas</h3>
-    <p><strong>Total Acumulado:</strong> ₡<span th:text="${#numbers.formatDecimal(totalVentas, 1, 2)}"></span></p>
-    <p><strong>Cantidad de Pedidos:</strong> <span th:text="${cantidadPedidos}"></span></p>
-    <p><strong>Ticket Promedio:</strong> ₡<span th:text="${#numbers.formatDecimal(ticketPromedio, 1, 2)}"></span></p>
+<div class="container">
 
-    <h3>Productos Más Vendidos</h3>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Producto</th>
-                <th>Unidades Vendidas</th>
-                <th>Total Generado</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="p, stat : ${productos}">
-                <td th:text="${stat.index + 1}"></td>
-                <td th:text="${p.nombre}"></td>
-                <td th:text="${p.unidadesVendidas}"></td>
-                <td>₡<span th:text="${#numbers.formatDecimal(p.totalGenerado, 1, 2)}"></span></td>
-            </tr>
-            <tr th:if="${#lists.isEmpty(productos)}">
-                <td colspan="4">No hay productos vendidos</td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="card">
+        <h3>Filtrar por Fecha</h3>
+        <form method="get" th:action="@{/admin/reportes}" class="filter-bar">
+            <label>Desde:</label>
+            <input type="date" name="desde" th:value="${desde}"/>
+            <label>Hasta:</label>
+            <input type="date" name="hasta" th:value="${hasta}"/>
+            <button type="submit" class="btn btn-primary">Aplicar Filtro</button>
+            <a href="/admin/reportes" class="btn btn-secondary">Limpiar</a>
+        </form>
+    </div>
 
-    <!-- EXPORTAR -->
-    <br/>
-    <h3>Exportar Reporte</h3>
-    <a th:href="@{/admin/reportes/exportar(formato='csv',desde=${desde},hasta=${hasta})}">
-        <button type="button">Exportar CSV</button>
-    </a>
-    <a th:href="@{/admin/reportes/exportar(formato='pdf',desde=${desde},hasta=${hasta})}">
-        <button type="button">Exportar PDF</button>
-    </a>
+    <div th:if="${cantidadPedidos == 0}">
+        <div class="card">
+            <p class="empty-msg">No hay datos disponibles para el rango seleccionado.</p>
+        </div>
+    </div>
+
+    <div th:if="${cantidadPedidos > 0}">
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="label">Total Acumulado</div>
+                <div class="value" th:text="${'₡' + #numbers.formatDecimal(totalVentas, 1, 2)}"></div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Cantidad de Pedidos</div>
+                <div class="value" th:text="${cantidadPedidos}"></div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Ticket Promedio</div>
+                <div class="value" th:text="${'₡' + #numbers.formatDecimal(ticketPromedio, 1, 2)}"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Productos Más Vendidos</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Producto</th>
+                        <th>Unidades Vendidas</th>
+                        <th>Total Generado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="p, stat : ${productos}">
+                        <td th:text="${stat.index + 1}"></td>
+                        <td th:text="${p.nombre}"></td>
+                        <td th:text="${p.unidadesVendidas}"></td>
+                        <td th:text="${'₡' + #numbers.formatDecimal(p.totalGenerado, 1, 2)}"></td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(productos)}">
+                        <td colspan="4" class="empty-msg">No hay productos vendidos</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="export-bar">
+                <a th:href="@{/admin/reportes/exportar(formato='csv',desde=${desde},hasta=${hasta})}" class="btn btn-success">Exportar CSV</a>
+                <a th:href="@{/admin/reportes/exportar(formato='pdf',desde=${desde},hasta=${hasta})}" class="btn btn-info">Exportar PDF</a>
+            </div>
+        </div>
+
+    </div>
+
+    <a href="/admin/panel" class="btn btn-secondary">← Volver al Panel</a>
+
 </div>
 
-<br/>
-<a href="/admin/panel">← Volver al Panel</a>
 </body>
 </html>
