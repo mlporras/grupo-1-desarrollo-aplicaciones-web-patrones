@@ -1,6 +1,7 @@
 package com.grupo1.ecommerce.service;
 
 import java.util.Optional;
+import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -93,5 +94,10 @@ public class UsuarioService {
     @Transactional(readOnly = true)
     public Optional<Tienda> getTiendaPorUsuario(Usuario usuario) {
         return tiendaRepository.findByUsuario(usuario);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Usuario> getClientesActivos() {
+        return usuarioRepository.findByRolAndActivoTrueOrderByNombreAsc("CLIENTE");
     }
 }

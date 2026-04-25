@@ -2,72 +2,101 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Nuevo Pedido</title>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f6f9; margin: 0; }
+        .navbar { background-color: #1f3b5c; color: white; padding: 15px; text-align: center; }
+        .container { width: 90%; max-width: 600px; margin: 30px auto; }
+        .card { background: white; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,.15); padding: 24px; }
+        .card h2 { margin-top: 0; color: #1f3b5c; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-weight: bold; margin-bottom: 6px; color: #333; }
+        .form-group input,
+        .form-group select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; box-sizing: border-box; }
+        .form-group input:focus,
+        .form-group select:focus { border-color: #2d6cdf; outline: none; box-shadow: 0 0 0 2px rgba(45,108,223,.2); }
+        .btn-group { display: flex; gap: 10px; margin-top: 20px; }
+        .btn { padding: 10px 20px; border: none; border-radius: 6px; font-size: 14px; cursor: pointer; text-decoration: none; text-align: center; }
+        .btn-primary { background-color: #2d6cdf; color: white; }
+        .btn-primary:hover { background-color: #1b4fa8; }
+        .btn-secondary { background-color: #6c757d; color: white; }
+        .btn-secondary:hover { background-color: #545b62; }
+    </style>
 </head>
-
 <body>
 
-<h2>Crear Pedido</h2>
+<div class="navbar">
+    <h1>Nuevo Pedido</h1>
+</div>
 
-<form th:action="@{/admin/pedidos/guardar}" th:object="${pedido}" method="post">
+<div class="container">
+    <div class="card">
+        <h2>Crear Pedido</h2>
 
-    <!-- NUMERO -->
-    <label>Número Pedido:</label>
-    <input type="text" th:field="*{numeroPedido}" required/>
-    <br/><br/>
+        <form th:action="@{/admin/pedidos/guardar}" th:object="${pedido}" method="post">
 
-    <!-- USUARIO (MANUAL POR AHORA) -->
-    <label>ID Usuario:</label>
-    <input type="number" th:field="*{usuario.idUsuario}" required/>
-    <br/><br/>
+            <div class="form-group">
+                <label>Número Pedido:</label>
+                <input type="text" th:field="*{numeroPedido}" required/>
+            </div>
 
-    <!-- METODO PAGO -->
-    <label>Método de Pago:</label>
-    <select th:field="*{metodoPago}">
-        <option value="">Seleccione</option>
-        <option th:each="m : ${metodos}"
-                th:value="${m.idMetodoPago}"
-                th:text="${m.nombre}">
-        </option>
-    </select>
-    <br/><br/>
+            <div class="form-group">
+                <label>Usuario:</label>
+                <select th:field="*{usuario.idUsuario}" required>
+                    <option value="">Seleccione</option>
+                    <option th:each="u : ${usuarios}"
+                            th:value="${u.idUsuario}"
+                            th:text="${u.nombre + ' (' + u.correo + ')'}">
+                    </option>
+                </select>
+            </div>
 
-    <!-- ZONA ENVIO -->
-    <label>Zona de Envío:</label>
-    <select th:field="*{zonaEnvio}">
-        <option value="">Seleccione</option>
-        <option th:each="z : ${zonas}"
-                th:value="${z.idZonaEnvio}"
-                th:text="${z.nombre}">
-        </option>
-    </select>
-    <br/><br/>
+            <div class="form-group">
+                <label>Método de Pago:</label>
+                <select th:field="*{metodoPago}">
+                    <option value="">Seleccione</option>
+                    <option th:each="m : ${metodos}"
+                            th:value="${m.idMetodoPago}"
+                            th:text="${m.nombre}">
+                    </option>
+                </select>
+            </div>
 
-    <!-- DIRECCION -->
-    <label>Dirección:</label>
-    <input type="text" th:field="*{direccionEnvio}" required/>
-    <br/><br/>
+            <div class="form-group">
+                <label>Zona de Envío:</label>
+                <select th:field="*{zonaEnvio}">
+                    <option value="">Seleccione</option>
+                    <option th:each="z : ${zonas}"
+                            th:value="${z.idZonaEnvio}"
+                            th:text="${z.nombre}">
+                    </option>
+                </select>
+            </div>
 
-    <!-- TELEFONO -->
-    <label>Teléfono:</label>
-    <input type="text" th:field="*{telefonoEnvio}"/>
-    <br/><br/>
+            <div class="form-group">
+                <label>Dirección:</label>
+                <input type="text" th:field="*{direccionEnvio}" required/>
+            </div>
 
-    <!-- SUBTOTAL (LO CALCULA EL SERVICE) -->
-    <input type="hidden" th:field="*{subtotal}"/>
+            <div class="form-group">
+                <label>Teléfono:</label>
+                <input type="text" th:field="*{telefonoEnvio}"/>
+            </div>
 
-    <!-- COSTO ENVIO -->
-    <input type="hidden" th:field="*{costoEnvio}"/>
+            <input type="hidden" th:field="*{subtotal}"/>
+            <input type="hidden" th:field="*{costoEnvio}"/>
+            <input type="hidden" th:field="*{total}"/>
+            <input type="hidden" th:field="*{estado}" value="PENDIENTE"/>
 
-    <!-- TOTAL -->
-    <input type="hidden" th:field="*{total}"/>
+            <div class="btn-group">
+                <button type="submit" class="btn btn-primary">Guardar</button>
+                <a href="/admin/pedidos/listado" class="btn btn-secondary">Cancelar</a>
+            </div>
 
-    <!-- ESTADO -->
-    <input type="hidden" th:field="*{estado}" value="PENDIENTE"/>
-
-    <button type="submit">Guardar</button>
-
-</form>
+        </form>
+    </div>
+</div>
 
 </body>
 </html>

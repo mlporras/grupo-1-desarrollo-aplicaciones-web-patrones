@@ -18,6 +18,8 @@ public class PedidoController {
     private MetodoPagoService metodoPagoService;
     @Autowired
     private ZonaEnvioService zonaEnvioService;
+    @Autowired
+    private UsuarioService usuarioService;
 
     // LISTADO
     @GetMapping("/listado")
@@ -30,6 +32,7 @@ public class PedidoController {
     @GetMapping("/nuevo")
     public String nuevo(Model model) {
         model.addAttribute("pedido", new Pedido());
+        model.addAttribute("usuarios", usuarioService.getClientesActivos());
         model.addAttribute("metodos", metodoPagoService.getMetodosPago(true));
         model.addAttribute("zonas", zonaEnvioService.getZonas());
         return "/admin/pedidos/modifica";
